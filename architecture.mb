@@ -1,0 +1,42 @@
+# Digital Staff Contact architecture
+
+This document describes the application as implemented. The companion diagram is [architecture.mmd](architecture.mmd), a Mermaid flowchart.
+
+## Scope and runtime
+
+This repository contains an Angular 20 single-page application for digital staff contact cards. There is no API or back-office implementation in this repository. `src/main.ts` bootstraps the standalone `AppComponent`, registers the router, and configures the Angular service worker for production. The root component only hosts the router outlet. Route components are loaded lazily.
+
+The browser holds all application state and profile data. `PublicProfileService` reads from a hard-coded `MOCK_PROFILES` array and returns delayed RxJS observables. `StaffProfile` and `SocialLink` define the shared profile shape. No HTTP client, database, or server-side authorization is wired in.
+
+## Routes and user flows
+
+| URL | Component | Behavior |
+| --- | --- | --- |
+| `/` | `ExamplesComponent` | Lists the three mock profiles with public and staff links. |
+| `/contact/{public-token}` | `PublicContactComponent` | Resolves the mock profile by `publicToken`. Shows loading, ready, or unavailable state. No login required. |
+| `/staff/{staff-token}` | `StaffCardComponent` | Resolves the mock profile by `staffToken` and displays a QR code for the matching public URL. No login required. |
+| Other paths | Router redirect | Redirects to `/`. |
+
+The public page can share or copy its URL, show a QR code, and generate a vCard in the browser. The staff page creates a QR code and share link pointing to the public token URL. Both use the `qrcode` package; sharing uses the browser Share API when available. A customer following the token URL needs no login.
+
+Each profile has a different opaque token for each page. Both pages are public, and the mock profile data and tokens are bundled into the frontend. The tokens distinguish URLs; they do not provide server-enforced access control. The README identifies `GET /api/v1/public/contact/{token}` as future integration work; it is not part of the current runtime.
+
+## Build and delivery
+
+`angular.json` builds the browser app into `build/` using SCSS, copies files from `public/` plus configured images and favicon, and enables `ngsw-config.json` for production. The service worker caches the application shell and static assets. `npm run build` runs `ng build` and then `scripts/copy-spa-fallback.mjs`, which copies `build/index.html` to `build/404.html` so a static host that serves that fallback can load deep links. The production host itself is not specified here.
+
+## Main source boundaries
+
+| Area | Files | Responsibility |
+| --- | --- | --- |
+| Bootstrap and routing | `src/main.ts`, `src/app/app.component.ts` | Start Angular, choose a lazy route, register service worker. |
+| Pages | `src/app/examples/`, `staff-card/`, `public-contact/` | Render demo list, staff QR view, and public contact view. |
+| Data lookup | `src/app/services/public-profile.service.ts` | In-memory profile lookup by the appropriate page token. |
+| Types | `src/app/models/staff-profile.ts` | Contact card data contract. |
+| Offline and output | `ngsw-config.json`, `scripts/copy-spa-fallback.mjs` | Static asset caching and deep-link fallback file. |
+
+## Current integration limits
+
+- Public and staff profile lookups both read the same client-bundled array. Both views and their tokens are visible in the demo directory, so the token URLs are not private.
+- vCards and QR images are generated in the browser. The README calls for a Laravel vCard endpoint when the backend is available.
+- `src/main.ts` currently calls `provideServiceWorker()` twice with the same configuration. The diagram represents the single intended service-worker role rather than two separate workers.

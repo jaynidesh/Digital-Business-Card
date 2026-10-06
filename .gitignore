@@ -1,0 +1,25 @@
+# Installed dependencies and generated output
+/node_modules/
+/build/
+/dist/
+/.angular/
+/coverage/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Logs and temporary files
+*.log
+*.log.*
+/tmp/
+/temp/
+
+# Editor and operating-system files
+/.vscode/
+/.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

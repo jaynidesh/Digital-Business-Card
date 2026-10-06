@@ -1,0 +1,13 @@
+:host{display:block;min-height:100dvh;background:#e8f0ee}main{width:min(1050px,100%);margin:auto;padding:54px 24px}
+header{
+    // display:flex;
+    // align-items:center;
+    gap:16px}
+.brand-mark{width:48px;height:48px;display:grid;place-items:center;border-radius:15px 6px;background:#1E3868;color:#fff;font:800 1.25rem Georgia}header p{margin:0 0 3px;color:#00B2E2;text-transform:uppercase;font-size:.7rem;font-weight:800;letter-spacing:.13em}h1{margin:0;color:#1E3868;font:600 clamp(2rem,5vw,3.5rem) Georgia}.lead{color:#647e79;font-size:1.05rem;margin:18px 0 32px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}article{background:#fff;border:1px solid rgba(7,63,56,.08);border-radius:22px;padding:22px;box-shadow:0 14px 42px rgba(4,39,35,.09)}
+.avatar{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:#1E3868;color:white;font:600 1.2rem Georgia;margin-bottom:18px}
+.avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+h2{margin:0;color:#173f39;font:600 1.35rem Georgia}article p{margin:5px 0;color:#496c66;font-weight:700;font-size:.86rem}small{color:#879996}nav{display:grid;gap:9px;margin-top:22px}nav a{text-align:center;text-decoration:none;background:#1E3868;color:white;border-radius:12px;padding:12px;font-weight:750;font-size:.84rem}.staff{background:#edf4f2!important;color:#164a43!important}aside{margin-top:28px;padding:18px 20px;border-left:4px solid #d4ae62;background:rgba(255,255,255,.55);color:#466762;border-radius:0 14px 14px 0}aside p{margin:5px 0 0;line-height:1.55;font-size:.85rem}@media(max-width:760px){main{padding:30px 16px}.grid{grid-template-columns:1fr}}
+.intro{
+    width: 100%;
+    margin-bottom: 20px;
+}

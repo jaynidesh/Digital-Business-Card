@@ -1,0 +1,30 @@
+flowchart LR
+    visitor[Customer browser] --> static[Static host / Angular app]
+    staff[Staff browser] --> static
+
+    subgraph browser[Angular SPA in browser]
+        router[Router and AppComponent]
+        examples[Examples page]
+        staffPage[Staff card page]
+        publicPage[Public contact page]
+        profiles[PublicProfileService]
+        mock[(Bundled MOCK_PROFILES)]
+        qr[qrcode library]
+        webapis[Share / clipboard / vCard browser APIs]
+        sw[Angular service worker]
+    end
+
+    static --> router
+    static --> sw
+    router -->|/| examples
+    router -->|/staff/staff-token| staffPage
+    router -->|/contact/public-token| publicPage
+    examples --> mock
+    staffPage -->|getByStaffToken| profiles
+    publicPage -->|getByToken| profiles
+    profiles --> mock
+    staffPage --> qr
+    publicPage --> qr
+    staffPage --> webapis
+    publicPage --> webapis
+    staffPage -.->|public token link| publicPage

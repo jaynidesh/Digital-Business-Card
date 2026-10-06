@@ -1,0 +1,112 @@
+<main class="page-shell">
+  @if (state() === 'loading') {
+    <section class="card skeleton" aria-label="Loading contact">
+      <div class="skeleton-line short"></div><div class="skeleton-avatar"></div>
+      <div class="skeleton-line name"></div><div class="skeleton-line"></div>
+      <div class="skeleton-button"></div><div class="skeleton-grid"><i></i><i></i><i></i></div>
+    </section>
+  } @else if (state() === 'unavailable') {
+    <section class="card unavailable">
+      <img class="sbm_logo" src="assets/images/logo_sbm.png" alt="Logo">
+      <div class="unavailable-icon" aria-hidden="true">!</div>
+      <h1>This contact is unavailable</h1>
+      <p>The link may have expired or the profile is no longer active.</p>
+    </section>
+  } @else if (profile(); as person) {
+    <article class="card">
+      <header class="brand-row">
+        <a class="brand" [href]="person.website" target="_blank" rel="noopener" aria-label="Visit company website">
+          <img class="sbm_logo" src="assets/images/logo_sbm.png" alt="Logo">
+        </a>
+        <div class="top-cta">
+          <button class="round-button" type="button" (click)="openQr()" aria-label="Show QR code">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm9-2h3v3h-3v-3Zm4 0h3v3h-3v-3Zm-4 4h3v3h-3v-3Zm4 0h3v3h-3v-3Z"/></svg>
+          </button>
+          <button class="round-button" type="button" (click)="share(person)" aria-label="Share contact">
+            <span class="icon-share"></span>
+          </button>
+        </div>
+      </header>
+
+      <section class="identity">
+        <div class="portrait" aria-hidden="true">
+
+          @if (person.photo) {
+            <img
+              [src]="person.photo"
+              [alt]="person.displayName"
+            >
+          } @else {
+            <span>{{ person.initials }}</span>
+          }
+
+        </div>
+
+        <p class="eyebrow">Digital business card</p>
+        <h1>{{ person.displayName }}</h1>
+        <p class="role">{{ person.jobTitle }}</p>
+        <p class="department">{{ person.department }}</p>
+      </section>
+
+      <button class="save-button" type="button" (click)="downloadVCard(person)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+        Save to contacts
+      </button>
+
+      <section class="quick-actions" aria-label="Quick contact actions">
+        <a [href]="'tel:' + person.mobile"><span class="action-icon">
+          <span class="icon-phone"></span>
+        </span><b>Call</b><small>Mobile</small></a>
+        <a [href]="'mailto:' + person.email"><span class="action-icon">
+          <span class="icon-envelop"></span>
+        </span><b>Email</b><small>Work</small></a>
+        @if (person.whatsapp) {
+          <a [href]="'https://wa.me/' + person.whatsapp.replace('+', '')" target="_blank" rel="noopener"><span class="action-icon">
+            <span class="icon-whatsapp"></span>
+          </span><b>WhatsApp</b><small>Message</small></a>
+        }
+      </section>
+
+      <section class="details" aria-label="Contact details">
+        <a [href]="'tel:' + person.office" class="detail-row"><span class="detail-icon">
+          <span class="icon-phone"></span>
+        </span><span><small>Office</small><b>{{ person.office }} · Ext. {{ person.extension }}</b></span><span class="chevron">›</span></a>
+        <a [href]="'mailto:' + person.email" class="detail-row"><span class="detail-icon">
+          <span class="icon-envelop"></span>
+        </span><span><small>Email</small><b>{{ person.email }}</b></span><span class="chevron">›</span></a>
+        <a [href]="person.website" target="_blank" rel="noopener" class="detail-row"><span class="detail-icon">
+          <span class="icon-earth"></span>
+        </span><span><small>Website</small><b>{{ person.websiteDisplay }}</b></span><span class="chevron">›</span></a>
+        <a [href]="'https://maps.google.com/?q=' + person.address" target="_blank" rel="noopener" class="detail-row"><span class="detail-icon">
+          <span class="icon-location"></span>
+        </span><span><small>Office address</small><b>{{ person.address }}</b></span><span class="chevron">›</span></a>
+      </section>
+
+      <section class="socials" aria-label="Social links">
+        @for (social of person.socials; track social.label) {
+          <a [href]="social.url" target="_blank" rel="noopener" [attr.aria-label]="social.label">
+             <span class="icon-{{social.icon}}"></span>
+          </a>
+        }
+      </section>
+
+      <!-- <button class="share-button" type="button" (click)="share(person)">
+        <span class="icon-share"></span>
+        {{ copied() ? 'Link copied' : 'Share contact' }}
+      </button> -->
+      <p class="privacy">Business contact information · Shared securely</p>
+    </article>
+
+    @if (qrOpen()) {
+      <div class="modal-backdrop" (click)="qrOpen.set(false)" role="presentation">
+        <section class="qr-modal" role="dialog" aria-modal="true" aria-label="Contact QR code" (click)="$event.stopPropagation()">
+          <button class="modal-close" type="button" (click)="qrOpen.set(false)" aria-label="Close">×</button>
+          <div class="mini-brand"><img class="sbm_logo" src="assets/images/logo_sbm.png" alt="Logo"></div>
+          <h2>Scan to connect</h2><p>Open {{ person.displayName }}’s digital business card.</p>
+          @if (qrDataUrl()) { <img [src]="qrDataUrl()" alt="QR code for this contact profile"> }
+          <strong>{{ person.displayName }}</strong><span class="qr-role">{{ person.jobTitle }}</span>
+        </section>
+      </div>
+    }
+  }
+</main>

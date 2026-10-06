@@ -1,0 +1,66 @@
+:root { color-scheme: light; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #dfeae7; color: #173d38; }
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body { background: radial-gradient(circle at 15% 10%,rgba(215,177,98,.24),transparent 27%), radial-gradient(circle at 88% 90%,rgba(12,88,77,.2),transparent 34%), #e8f0ee; }
+button, input, textarea, select { font: inherit; }
+button:focus-visible, a:focus-visible { outline: 3px solid #d4aa57; outline-offset: 3px; }
+.sbm_logo{
+    width: 80px;
+    height: auto;
+}
+
+
+@font-face {
+  font-family: 'icomoon';
+  src:  url('assets/fonts/icomoon.eot?ea8afz');
+  src:  url('assets/fonts/icomoon.eot?ea8afz#iefix') format('embedded-opentype'),
+    url('assets/fonts/icomoon.ttf?ea8afz') format('truetype'),
+    url('assets/fonts/icomoon.woff?ea8afz') format('woff'),
+    url('assets/fonts/icomoon.svg?ea8afz#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-phone:before {
+  content: "\e942";
+}
+.icon-envelop:before {
+  content: "\e945";
+}
+.icon-location:before {
+  content: "\e947";
+}
+.icon-mobile:before {
+  content: "\e958";
+}
+.icon-earth:before {
+  content: "\e9ca";
+}
+.icon-share:before {
+  content: "\ea82";
+}
+.icon-instagram:before {
+  content: "\ea92";
+}
+.icon-whatsapp:before {
+  content: "\ea93";
+}
+.icon-linkedin:before {
+  content: "\eac9";
+}
