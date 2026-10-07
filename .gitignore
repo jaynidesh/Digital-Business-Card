@@ -9,6 +9,8 @@
 .env
 .env.*
 !.env.example
+/server/credentials/
+/Certificates/
 
 # Logs and temporary files
 *.log

@@ -5,6 +5,7 @@ import QRCode from 'qrcode';
 import { StaffProfile } from '../models/staff-profile';
 import { PublicProfileService } from '../services/public-profile.service';
 import { CommonModule } from '@angular/common';
+import { visibleWallets, walletUrl } from './wallet-platform';
 
 @Component({
   selector: 'app-public-contact',
@@ -26,6 +27,8 @@ export class PublicContactComponent {
   readonly qrOpen = signal(false);
   readonly copied = signal(false);
   readonly qrDataUrl = signal('');
+  readonly wallets = visibleWallets(navigator.userAgent, navigator.platform, navigator.maxTouchPoints);
+  readonly walletUrl = walletUrl;
 
   constructor() {
     const token = this.route.snapshot.paramMap.get('token') ?? '';

@@ -18,6 +18,9 @@ h1 { margin: 0; color: #1E3868; font: 600 2rem/1.12 Georgia,serif; letter-spacin
 button, a { -webkit-tap-highlight-color: transparent; }
 .save-button { width: 100%; min-height: 54px; border: 0; border-radius: 16px; background: #1E3868; color: white; font: 750 1rem/1 inherit; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 10px 23px rgba(11,81,72,.22); }
 .save-button svg, .share-button svg { width: 21px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.wallet-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.wallet-button { flex: 1 1 170px; min-height: 48px; padding: 10px 14px; border-radius: 14px; background: #111; color: #fff; text-decoration: none; font-weight: 700; font-size: .9rem; display: grid; place-items: center; text-align: center; }
+.wallet-button:focus-visible { outline: 3px solid #00b2e2; outline-offset: 3px; }
 .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 9px; padding: 14px 0 18px; border-bottom: 1px solid #e9efed; }
 .quick-actions a { min-width: 0; color: #153e38; background: #f5f9f8; border: 1px solid #e4ecea; border-radius: 15px; text-decoration: none; display: grid; justify-items: center; padding: 12px 4px 10px; }
 .action-icon { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; background: #e4f0ed; color: #1E3868; font-weight: 800; }

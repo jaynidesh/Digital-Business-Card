@@ -53,6 +53,15 @@
         Save to contacts
       </button>
 
+      <!-- <div class="wallet-actions" aria-label="Add contact card to a wallet">
+        @if (wallets.includes('apple')) {
+          <a class="wallet-button" [href]="walletUrl(person.publicToken, 'apple')">Add to Apple Wallet</a>
+        }
+        @if (wallets.includes('google')) {
+          <a class="wallet-button" [href]="walletUrl(person.publicToken, 'google')">Add to Google Wallet</a>
+        }
+      </div> -->
+
       <section class="quick-actions" aria-label="Quick contact actions">
         <a [href]="'tel:' + person.mobile"><span class="action-icon">
           <span class="icon-phone"></span>

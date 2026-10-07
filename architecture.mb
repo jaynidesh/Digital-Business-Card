@@ -4,9 +4,9 @@ This document describes the application as implemented. The companion diagram is
 
 ## Scope and runtime
 
-This repository contains an Angular 20 single-page application for digital staff contact cards. There is no API or back-office implementation in this repository. `src/main.ts` bootstraps the standalone `AppComponent`, registers the router, and configures the Angular service worker for production. The root component only hosts the router outlet. Route components are loaded lazily.
+This repository contains an Angular 20 single-page application for digital staff contact cards and a Node service that signs Wallet passes. The planned backoffice API is not connected yet; its technology is not specified by this repository. `src/main.ts` bootstraps the standalone `AppComponent`, registers the router, and configures the Angular service worker for production. The root component only hosts the router outlet. Route components are loaded lazily.
 
-The browser holds all application state and profile data. `PublicProfileService` reads from a hard-coded `MOCK_PROFILES` array and returns delayed RxJS observables. `StaffProfile` and `SocialLink` define the shared profile shape. No HTTP client, database, or server-side authorization is wired in.
+The browser holds all application state and profile data. `PublicProfileService` reads from `data/mock-profiles.json` and returns delayed RxJS observables. The Wallet service reads the same fixture server-side and looks up profiles by public token before signing. `StaffProfile` and `SocialLink` define the shared profile shape. No profile HTTP client, database, or server-side authorization is wired in.
 
 ## Routes and user flows
 
@@ -17,13 +17,15 @@ The browser holds all application state and profile data. `PublicProfileService`
 | `/staff/{staff-token}` | `StaffCardComponent` | Resolves the mock profile by `staffToken` and displays a QR code for the matching public URL. No login required. |
 | Other paths | Router redirect | Redirects to `/`. |
 
-The public page can share or copy its URL, show a QR code, and generate a vCard in the browser. The staff page creates a QR code and share link pointing to the public token URL. Both use the `qrcode` package; sharing uses the browser Share API when available. A customer following the token URL needs no login.
+The public page can share or copy its URL, show a QR code, and generate a vCard in the browser. Both the public and staff pages show an Apple Wallet action on iOS/iPadOS, a Google Wallet action on Android, and both on desktop or unknown devices. Each action calls `/api/v1/public/contact/{public-token}/wallet/{platform}`. The staff page creates a QR code and share link pointing to the public token URL. Both use the `qrcode` package; sharing uses the browser Share API when available. A customer following the token URL needs no login.
+
+The Node Wallet service validates the token against server-owned demo data. For Apple it builds a generic pass, signs its manifest with the pass certificate and private key, and returns a `.pkpass`. For Google it signs a Generic Pass JWT with the issuer service account and redirects to the Google Wallet save URL. Signing keys stay on the server. The pass barcode links to the public card.
 
 Each profile has a different opaque token for each page. Both pages are public, and the mock profile data and tokens are bundled into the frontend. The tokens distinguish URLs; they do not provide server-enforced access control. The README identifies `GET /api/v1/public/contact/{token}` as future integration work; it is not part of the current runtime.
 
 ## Build and delivery
 
-`angular.json` builds the browser app into `build/` using SCSS, copies files from `public/` plus configured images and favicon, and enables `ngsw-config.json` for production. The service worker caches the application shell and static assets. `npm run build` runs `ng build` and then `scripts/copy-spa-fallback.mjs`, which copies `build/index.html` to `build/404.html` so a static host that serves that fallback can load deep links. The production host itself is not specified here.
+`angular.json` builds the browser app into `build/` using SCSS, copies files from `public/` plus configured images and favicon, and enables `ngsw-config.json` for production. The service worker caches the application shell and static assets. `npm run build` runs `ng build` and then `scripts/copy-spa-fallback.mjs`, which copies `build/index.html` to `build/404.html` so a static host that serves that fallback can load deep links. Development uses `proxy.conf.json` to forward `/api` to the local Wallet service. A production host must route Wallet requests to the server that signs passes, whether that is the backoffice or this Node service, and keep credentials out of the static build.
 
 ## Main source boundaries
 
@@ -32,11 +34,13 @@ Each profile has a different opaque token for each page. Both pages are public, 
 | Bootstrap and routing | `src/main.ts`, `src/app/app.component.ts` | Start Angular, choose a lazy route, register service worker. |
 | Pages | `src/app/examples/`, `staff-card/`, `public-contact/` | Render demo list, staff QR view, and public contact view. |
 | Data lookup | `src/app/services/public-profile.service.ts` | In-memory profile lookup by the appropriate page token. |
+| Wallet issuing | `server/server.mjs`, `server/wallet-pass.mjs`, `data/mock-profiles.json` | Resolve public tokens and create signed Apple and Google passes. |
 | Types | `src/app/models/staff-profile.ts` | Contact card data contract. |
 | Offline and output | `ngsw-config.json`, `scripts/copy-spa-fallback.mjs` | Static asset caching and deep-link fallback file. |
 
 ## Current integration limits
 
 - Public and staff profile lookups both read the same client-bundled array. Both views and their tokens are visible in the demo directory, so the token URLs are not private.
-- vCards and QR images are generated in the browser. The README calls for a Laravel vCard endpoint when the backend is available.
+- Wallet issuance requires Apple and Google issuer credentials and a deployed same-origin API route. Live acceptance cannot be verified with the demo credentials used in automated tests.
+- vCards and QR images are generated in the browser. The backoffice can provide a vCard endpoint when it is connected.
 - `src/main.ts` currently calls `provideServiceWorker()` twice with the same configuration. The diagram represents the single intended service-worker role rather than two separate workers.

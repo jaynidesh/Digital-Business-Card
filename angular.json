@@ -37,6 +37,7 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": { "proxyConfig": "proxy.conf.json" },
           "configurations": {
             "production": { "buildTarget": "digital-contact:build:production" },
             "development": { "buildTarget": "digital-contact:build:development" }

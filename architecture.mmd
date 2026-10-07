@@ -28,3 +28,9 @@ flowchart LR
     staffPage --> webapis
     publicPage --> webapis
     staffPage -.->|public token link| publicPage
+    staffPage -->|/api wallet request| wallet
+    publicPage -->|/api wallet request| wallet[Node Wallet service]
+    wallet --> data[(Shared demo profiles)]
+    wallet --> keys[(Signing credentials)]
+    wallet -->|signed pkpass| apple[Apple Wallet]
+    wallet -->|signed save JWT| google[Google Wallet]

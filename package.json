@@ -2,9 +2,12 @@
   "name": "digital-staff-contact",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "start": "ng serve --host 0.0.0.0",
-    "build": "ng build && node scripts/copy-spa-fallback.mjs"
+    "build": "ng build && node scripts/copy-spa-fallback.mjs",
+    "wallet:server": "node --env-file=.env server/server.mjs",
+    "test": "node --experimental-strip-types --test test/*.test.mjs"
   },
   "dependencies": {
     "@angular/animations": "20.3.33",
