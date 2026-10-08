@@ -2,6 +2,32 @@
   {
     "staffToken": "hEML4Yf4xLr-9loOdeqxUWq2",
     "publicToken": "hGr_tQ2piuR4eNgLkK94CIXh",
+    "displayName": "Vimal Naikeny",
+    "initials": "NM",
+    "photo": "assets/images/image001.jpg",
+    "jobTitle": "Deputy Group CEO",
+    "department": "Group Executive Office",
+    "company": "SBM Holdings Ltd",
+    "mobile": "+23052523456",
+    "mobileDisplay": "+230 5252 3456",
+    "office": "+2302028130",
+    "extension": "8130",
+    "email": "vimal.naikeny@sbmgroup.mu",
+    "website": "https://www.sbmgroup.mu/",
+    "websiteDisplay": "https://www.sbmgroup.mu",
+    "address": "7 Exchange Square, Wall Street, Cybercity, Ebene, Republic of Mauritius",
+    "whatsapp": "+23052523456",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com",
+        "icon": "linkedin"
+      }
+    ]
+  },
+  {
+    "staffToken": "hEdfef4xLr-9loOdeqxUWq2",
+    "publicToken": "hGr_tQ2piu2dfELkK94CIXh",
     "displayName": "Nourani Madarbux",
     "initials": "NM",
     "photo": "assets/images/man.jpg",

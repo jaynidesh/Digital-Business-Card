@@ -7,12 +7,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 import { createWalletServer } from '../server/server.mjs';
+import { createGoogleSaveUrl } from '../server/wallet-pass.mjs';
 
 const token = 'hGr_tQ2piuR4eNgLkK94CIXh';
 const exec = promisify(execFile);
 
-async function withServer(config, check) {
-  const server = createWalletServer(config);
+async function withServer(config, check, dependencies) {
+  const server = createWalletServer(config, dependencies);
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   try { await check(`http://127.0.0.1:${server.address().port}`); }
   finally { await new Promise(resolve => server.close(resolve)); }
@@ -29,6 +30,7 @@ test('wallet routes reject unknown contacts and report missing credentials', asy
 
 test('Google route redirects to a signed save link for a known contact', async () => {
   const { privateKey } = generateKeyPairSync('rsa', { modulusLength: 2048 });
+  let syncedProfile;
   await withServer({
     publicBaseUrl: 'https://contacts.example.test',
     google: {
@@ -39,7 +41,11 @@ test('Google route redirects to a signed save link for a known contact', async (
     const response = await fetch(`${base}/api/v1/public/contact/${token}/wallet/google`, { redirect: 'manual' });
     assert.equal(response.status, 302);
     assert.match(response.headers.get('location'), /^https:\/\/pay\.google\.com\/gp\/v\/save\//);
-  });
+    assert.equal(syncedProfile?.publicToken, token);
+  }, { googlePass: async (profile, config) => {
+    syncedProfile = profile;
+    return createGoogleSaveUrl(profile, config);
+  } });
 });
 
 test('Apple route serves a signed pass archive with the Wallet MIME type', async () => {

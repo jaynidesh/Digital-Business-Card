@@ -18,7 +18,9 @@ Each profile has two different opaque tokens. The demo directory at `/` and the 
 
 ## Wallet passes
 
-The public and staff cards show **Add to Apple Wallet** on iPhone and iPad, **Add to Google Wallet** on Android, and both choices on other devices. The buttons call the same-origin wallet service using the contact's public token. Apple receives a signed `.pkpass`; Google redirects to a signed `pay.google.com` save link. A wallet pass contains a QR code linking back to the public card.
+The public and staff cards show **Add to Apple Wallet** on iPhone and iPad, **Add to Google Wallet** on Android, and both choices on other devices. The buttons call the same-origin wallet service using the contact's public token. Apple receives a signed `.pkpass`; Google creates or updates the contact's Generic Pass through the Wallet API and redirects to a signed `pay.google.com` save link. A wallet pass contains a QR code linking back to the public card.
+
+The Google pass shows the company, name, role and QR code, plus mobile, office, email and department on its card rows. Its details include the full role, website, address and WhatsApp number when available. Links open the public card, dial phone numbers, send email, visit the website, open the address in Maps, start WhatsApp, and open available social profiles. Empty fields are omitted. Google does not allow personal photos on passes; the contact photo remains on the public web card. Google limits the number of displayed text and link modules, so the service uses at most ten of each. The detailed object is stored through the Google Wallet API before issuing a short ID-only save link, since embedding all details in the link would exceed Google's recommended JWT length. Open **Add to Google Wallet** again after restarting the Wallet service to update a previously saved pass with the new fields.
 
 The service that issues Wallet passes must hold the signing credentials. Today that is the local Node service; the backoffice can take over this role later. To configure the current service:
 
@@ -60,7 +62,7 @@ npm run wallet:server
 npm start
 ```
 
-Angular proxies `/api` to the local wallet service during development. If you deploy this Node service, deploy `server/`, `server/assets/`, and `data/mock-profiles.json` alongside the Angular build, and reverse-proxy `/api/v1/public/contact/{token}/wallet/{apple|google}` to it on the same origin. Copy `.env.example` to `.env` before running the service; its start script uses Node's `--env-file=.env` option. Use Node 22.12+ for both Angular and the Wallet service; the Wallet service also runs on Node 20.18.2. OpenSSL and `zip` are required. Requests for unknown tokens return 404; unconfigured wallet providers return 503.
+Angular proxies `/api` to the local wallet service during development. If you deploy this Node service, deploy `server/`, `server/assets/`, and `data/mock-profiles.json` alongside the Angular build, and reverse-proxy `/api/v1/public/contact/{token}/wallet/{apple|google}` to it on the same origin. The Google service account must be authorized for the Wallet issuer and the service needs outbound HTTPS access to Google's OAuth and Wallet Objects APIs. Copy `.env.example` to `.env` before running the service; its start script uses Node's `--env-file=.env` option. Use Node 22.12+ for both Angular and the Wallet service; the Wallet service also runs on Node 20.18.2. OpenSSL and `zip` are required. Requests for unknown tokens return 404; unconfigured wallet providers return 503.
 
 Do not put certificate keys or service account JSON into `public/`, `src/`, or the Angular build. The wallet service resolves a token against `data/mock-profiles.json`; it never signs contact fields submitted by the browser. The demo profile JSON itself is also bundled in the frontend, so the tokens are public identifiers.
 

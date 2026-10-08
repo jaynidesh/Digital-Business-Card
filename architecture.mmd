@@ -33,4 +33,5 @@ flowchart LR
     wallet --> data[(Shared demo profiles)]
     wallet --> keys[(Signing credentials)]
     wallet -->|signed pkpass| apple[Apple Wallet]
-    wallet -->|signed save JWT| google[Google Wallet]
+    wallet -->|OAuth and class/object sync| googleApi[Google Wallet Objects API]
+    wallet -->|signed ID-only save JWT| google[Google Wallet]

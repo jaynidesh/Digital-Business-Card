@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createApplePass, createGoogleSaveUrl } from './wallet-pass.mjs';
+import { createApplePass } from './wallet-pass.mjs';
+import { ensureGooglePass } from './google-wallet.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const profiles = JSON.parse(readFileSync(resolve(root, 'data/mock-profiles.json'), 'utf8'));
@@ -14,7 +15,7 @@ function send(res, status, message) {
   res.end(message);
 }
 
-export function createWalletServer(config) {
+export function createWalletServer(config, { googlePass = ensureGooglePass } = {}) {
   return createServer(async (req, res) => {
     if (req.method !== 'GET') return send(res, 405, 'Method not allowed');
     const match = new URL(req.url, 'http://localhost').pathname.match(route);
@@ -26,7 +27,7 @@ export function createWalletServer(config) {
 
     try {
       if (platform === 'google') {
-        const location = createGoogleSaveUrl(profile, { ...config.google, publicBaseUrl: config.publicBaseUrl });
+        const location = await googlePass(profile, { ...config.google, publicBaseUrl: config.publicBaseUrl });
         res.writeHead(302, { Location: location, 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
         return res.end();
       }
