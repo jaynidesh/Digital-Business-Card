@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { generateKeyPairSync } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { mkdtemp } from 'node:fs/promises';
@@ -9,7 +10,7 @@ import { promisify } from 'node:util';
 import { createWalletServer } from '../server/server.mjs';
 import { createGoogleSaveUrl } from '../server/wallet-pass.mjs';
 
-const token = 'hGr_tQ2piuR4eNgLkK94CIXh';
+const token = JSON.parse(readFileSync(new URL('../data/mock-profiles.json', import.meta.url), 'utf8'))[0].publicToken;
 const exec = promisify(execFile);
 
 async function withServer(config, check, dependencies) {
@@ -52,12 +53,14 @@ test('Apple route serves a signed pass archive with the Wallet MIME type', async
   const dir = await mkdtemp(join(tmpdir(), 'sbm-wallet-http-test-'));
   const key = join(dir, 'key.pem');
   const cert = join(dir, 'cert.pem');
+  const wwdr = join(dir, 'wwdr.pem');
   await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=Wallet Test']);
+  await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(dir, 'wwdr-key.pem'), '-out', wwdr, '-days', '1', '-subj', '/CN=WWDR Test']);
   await withServer({
     publicBaseUrl: 'https://contacts.example.test',
     apple: {
       passTypeId: 'pass.mu.sbm.contact', teamId: 'TEAM123456',
-      certificatePath: cert, privateKeyPath: key, wwdrCertificatePath: cert
+      certificatePath: cert, privateKeyPath: key, wwdrCertificatePath: wwdr
     }
   }, async base => {
     const response = await fetch(`${base}/api/v1/public/contact/${token}/wallet/apple`);

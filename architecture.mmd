@@ -28,10 +28,17 @@ flowchart LR
     staffPage --> webapis
     publicPage --> webapis
     staffPage -.->|public token link| publicPage
-    staffPage -->|/api wallet request| wallet
-    publicPage -->|/api wallet request| wallet[Node Wallet service]
-    wallet --> data[(Shared demo profiles)]
-    wallet --> keys[(Signing credentials)]
-    wallet -->|signed pkpass| apple[Apple Wallet]
-    wallet -->|OAuth and class/object sync| googleApi[Google Wallet Objects API]
-    wallet -->|signed ID-only save JWT| google[Google Wallet]
+    staffPage -->|/api wallet request| walletRoute[Wallet endpoint]
+    publicPage -->|/api wallet request| walletRoute
+    walletRoute -->|Node option| nodeWallet[Node Wallet service]
+    walletRoute -->|PHP option| phpWallet[PHP Wallet service]
+    nodeWallet --> data[(Shared demo profiles)]
+    phpWallet --> data
+    nodeWallet --> keys[(Signing credentials)]
+    phpWallet --> keys
+    nodeWallet -->|signed pkpass| apple[Apple Wallet]
+    phpWallet -->|signed pkpass| apple
+    nodeWallet -->|OAuth and class/object sync| googleApi[Google Wallet Objects API]
+    phpWallet -->|OAuth and class/object sync| googleApi
+    nodeWallet -->|signed ID-only save JWT| google[Google Wallet]
+    phpWallet -->|signed ID-only save JWT| google

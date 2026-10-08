@@ -46,7 +46,7 @@ test('new Google pass is stored through the API before returning a short signed 
   const pass = JSON.parse(calls[4].body);
   assert.equal(pass.header.defaultValue.value, profile.displayName);
   assert.equal(pass.textModulesData.find(({ id }) => id === 'address').body, profile.address);
-  assert.equal(pass.linksModuleData.uris.find(({ id }) => id === 'whatsapp').uri, 'https://wa.me/23052524786');
+  assert.equal(pass.linksModuleData.uris.find(({ id }) => id === 'whatsapp').uri, `https://wa.me/${profile.whatsapp.replace(/\D/g, '')}`);
   assert.equal(calls[4].headers.Authorization, 'Bearer test-access-token');
   const jwt = url.split('/').at(-1).split('.');
   assert.equal(verify('RSA-SHA256', Buffer.from(`${jwt[0]}.${jwt[1]}`), publicKey, Buffer.from(jwt[2], 'base64url')), true);
@@ -62,7 +62,7 @@ test('existing Google pass is updated with current profile details', async () =>
     'GET /walletobjects/v1/genericObject',
     'PATCH /walletobjects/v1/genericObject'
   ]);
-  assert.equal(JSON.parse(calls[3].body).textModulesData.find(({ id }) => id === 'row2left').body, profile.mobileDisplay);
+  assert.equal(JSON.parse(calls[3].body).textModulesData.find(({ id }) => id === 'mobile').body, profile.mobileDisplay);
 });
 
 test('Google API rejection stops issuance', async () => {

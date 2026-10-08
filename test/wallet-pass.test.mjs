@@ -22,10 +22,10 @@ test('Google pass includes public contact details and links from the profile fix
   assert.equal(pass.cardTitle.defaultValue.value, profile.company);
   assert.equal(pass.header.defaultValue.value, profile.displayName);
   assert.equal(pass.subheader.defaultValue.value, profile.jobTitle);
-  assert.equal(fields.row2left, profile.mobileDisplay);
-  assert.equal(fields.row2right, `${profile.office} ext. ${profile.extension}`);
-  assert.equal(fields.row3left, profile.email);
-  assert.equal(fields.row3right, profile.department);
+  assert.equal(fields.mobile, profile.mobileDisplay);
+  assert.equal(fields.office, `${profile.office} ext. ${profile.extension}`);
+  assert.equal(fields.email, profile.email);
+  assert.equal(fields.department, profile.department);
   assert.equal(fields.role, profile.jobTitle);
   assert.equal(fields.website, profile.websiteDisplay);
   assert.equal(fields.address, profile.address);
@@ -34,18 +34,17 @@ test('Google pass includes public contact details and links from the profile fix
   const links = Object.fromEntries(pass.linksModuleData.uris.map(({ id, uri }) => [id, uri]));
   assert.equal(links.contact, `https://contacts.example.test/contact/${profile.publicToken}`);
   assert.equal(links.mobile, `tel:${profile.mobile}`);
-  assert.equal(links.office, `tel:${profile.office}`);
   assert.equal(links.email, `mailto:${profile.email}`);
-  assert.equal(links.website, profile.website);
-  assert.equal(links.whatsapp, 'https://wa.me/23052524786');
-  assert.equal(links.social_0, profile.socials[0].url);
-  assert.ok(pass.linksModuleData.uris.length <= 10);
+  assert.equal(links.whatsapp, `https://wa.me/${profile.whatsapp.replace(/\D/g, '')}`);
+  assert.equal(pass.linksModuleData.uris.length, 4);
+  assert.equal(pass.barcode.alternateText, 'Scan contact card');
+  assert.equal(pass.logo.sourceUri.uri, `https://contacts.example.test/${profile.photo}`);
   assert.equal(JSON.stringify(pass).includes(profile.staffToken), false);
   assert.equal('heroImage' in pass, false);
 });
 
 test('Google pass omits unavailable WhatsApp and social links', () => {
-  const pass = walletPass.buildGooglePassObject(profiles[1], {
+  const pass = walletPass.buildGooglePassObject({ ...profiles[1], whatsapp: '', socials: [] }, {
     issuerId: '123456789', publicBaseUrl: 'https://contacts.example.test'
   });
   assert.equal(pass.textModulesData.some(({ id }) => id === 'whatsapp'), false);
@@ -78,13 +77,15 @@ test('Apple pass is a signed pkpass archive containing this contact', async () =
   const dir = await mkdtemp(join(tmpdir(), 'sbm-wallet-test-'));
   const key = join(dir, 'key.pem');
   const cert = join(dir, 'cert.pem');
+  const wwdr = join(dir, 'wwdr.pem');
   await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=Wallet Test']);
+  await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(dir, 'wwdr-key.pem'), '-out', wwdr, '-days', '1', '-subj', '/CN=WWDR Test']);
   const pass = await createApplePass(profile, {
     passTypeId: 'pass.mu.sbm.contact',
     teamId: 'TEAM123456',
     certificatePath: cert,
     privateKeyPath: key,
-    wwdrCertificatePath: cert,
+    wwdrCertificatePath: wwdr,
     publicBaseUrl: 'https://contacts.example.test'
   });
   assert.equal(pass.subarray(0, 2).toString(), 'PK');
@@ -110,8 +111,10 @@ test('Apple pass signs with a password-protected PEM key', async () => {
   try {
     const key = join(dir, 'key.pem');
     const cert = join(dir, 'cert.pem');
+    const wwdr = join(dir, 'wwdr.pem');
     const password = 'test-passphrase';
     await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', key, '-out', cert, '-days', '1', '-subj', '/CN=Wallet Test']);
+    await exec('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-nodes', '-keyout', join(dir, 'wwdr-key.pem'), '-out', wwdr, '-days', '1', '-subj', '/CN=WWDR Test']);
     const encrypted = createPrivateKey(await readFile(key)).export({ type: 'pkcs8', format: 'pem', cipher: 'aes-256-cbc', passphrase: password });
     await writeFile(key, encrypted, { mode: 0o600 });
     const pass = await createApplePass(profile, {
@@ -119,7 +122,7 @@ test('Apple pass signs with a password-protected PEM key', async () => {
       teamId: 'TEAM123456',
       certificatePath: cert,
       privateKeyPath: key,
-      wwdrCertificatePath: cert,
+      wwdrCertificatePath: wwdr,
       privateKeyPassword: password,
       publicBaseUrl: 'https://contacts.example.test'
     });
