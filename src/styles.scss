@@ -9,14 +9,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #d4aa57; outline-offs
     height: auto;
 }
 
-
 @font-face {
   font-family: 'icomoon';
-  src:  url('assets/fonts/icomoon.eot?ea8afz');
-  src:  url('assets/fonts/icomoon.eot?ea8afz#iefix') format('embedded-opentype'),
-    url('assets/fonts/icomoon.ttf?ea8afz') format('truetype'),
-    url('assets/fonts/icomoon.woff?ea8afz') format('woff'),
-    url('assets/fonts/icomoon.svg?ea8afz#icomoon') format('svg');
+  src:  url('assets/fonts/icomoon.eot?w972gg');
+  src:  url('assets/fonts/icomoon.eot?w972gg#iefix') format('embedded-opentype'),
+    url('assets/fonts/icomoon.ttf?w972gg') format('truetype'),
+    url('assets/fonts/icomoon.woff?w972gg') format('woff'),
+    url('assets/fonts/icomoon.svg?w972gg#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -37,23 +36,41 @@ button:focus-visible, a:focus-visible { outline: 3px solid #d4aa57; outline-offs
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-email:before {
+  content: "\e900";
+}
 .icon-phone:before {
-  content: "\e942";
+  content: "\e901";
 }
-.icon-envelop:before {
-  content: "\e945";
+.icon-contact_phone:before {
+  content: "\e902";
 }
-.icon-location:before {
-  content: "\e947";
+.icon-stay_current_portrait:before {
+  content: "\e903";
 }
-.icon-mobile:before {
-  content: "\e958";
+.icon-save_alt:before {
+  content: "\e904";
 }
-.icon-earth:before {
-  content: "\e9ca";
+.icon-pin_drop:before {
+  content: "\e905";
+}
+.icon-person_add:before {
+  content: "\e906";
 }
 .icon-share:before {
-  content: "\ea82";
+  content: "\e907";
+}
+.icon-language:before {
+  content: "\e908";
+}
+.icon-settings_phone:before {
+  content: "\e909";
+}
+.icon-qr_code:before {
+  content: "\e90a";
+}
+.icon-facebook:before {
+  content: "\ea91";
 }
 .icon-instagram:before {
   content: "\ea92";
@@ -61,6 +78,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid #d4aa57; outline-offs
 .icon-whatsapp:before {
   content: "\ea93";
 }
+.icon-youtube:before {
+  content: "\ea9d";
+}
 .icon-linkedin:before {
-  content: "\eac9";
+  content: "\eaca";
 }

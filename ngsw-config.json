@@ -11,6 +11,7 @@
           "/index.csr.html",
           "/index.html",
           "/manifest.webmanifest",
+          "/pwa/**/*.webmanifest",
           "/*.css",
           "/*.js"
         ]

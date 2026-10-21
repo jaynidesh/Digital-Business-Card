@@ -1,7 +1,13 @@
 <main class="staff-page">@if(profile();as person){<section class="staff-card">
         <header><a routerLink="/" class="brand">
                 <img class="sbm_logo" src="assets/images/logo_sbm.png" alt="Logo">
-            </a></header>
+            </a>
+            <div class="top-cta">
+                <button class="round-button" type="button" (click)="share(person)" aria-label="Share contact">
+                    <span class="icon-share"></span>
+                </button>
+            </div>
+        </header>
         <div class="identity">
             <div class="avatar">
                 @if (person.photo) {
@@ -11,23 +17,31 @@
                 }
             </div>
             <div>
-                <p>My digital card</p>
-                <h1>{{person.displayName}}</h1><span>{{person.jobTitle}}</span>
+                
+                <h1>{{person.displayName}}</h1>
+                <span>{{person.jobTitle}}</span>
+                <p class="department">{{person.department}}</p>
             </div>
         </div>
         <section class="qr-panel">
-            <p>Show this code to your customer</p>@if(qrDataUrl()){<img [src]="qrDataUrl()"
-                alt="QR code linking to public contact card">}
-                <!-- <small>Scanning opens your public card — no login required</small> -->
-        </section><a class="details-button" [routerLink]="['/contact',person.publicToken]">View contact details
-            <span>→</span></a><button class="share" type="button" (click)="share(person)">{{copied()?'Link
-            copied':'Share public card'}}</button>
+            <!-- <p>Show this code to your customer</p> -->
+            @if(qrDataUrl()){<img [src]="qrDataUrl()" alt="QR code linking to public contact card">}
+            <!-- <small>Scanning opens your public card — no login required</small> -->
+        </section>
+        
+        <a class="details-button" [routerLink]="['/contact',person.publicToken]">View contact details
+            <span>→</span>
+        </a>
+
+        <!-- <button class="share" type="button" (click)="share(person)">{{copied()?'Link
+            copied':'Share public card'}}
+        </button> -->
         <div class="wallet-actions" aria-label="Add contact card to a wallet">
             @if (wallets.includes('apple')) {
-            <a class="wallet-button" [href]="walletUrl(person.publicToken, 'apple')">Add to Apple Wallet</a>
+            <a class="wallet-button" [href]="walletUrl(person.publicToken, 'apple')">Add to Wallet</a>
             }
             @if (wallets.includes('google')) {
-            <a class="wallet-button" [href]="walletUrl(person.publicToken, 'google')">Add to Google Wallet</a>
+            <a class="wallet-button" [href]="walletUrl(person.publicToken, 'google')">Add to Wallet</a>
             }
         </div>
         <!-- <p class="security">Your public link uses a random, non-enumerable identifier.</p> -->

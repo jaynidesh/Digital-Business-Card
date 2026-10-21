@@ -20,7 +20,7 @@
         </a>
         <div class="top-cta">
           <button class="round-button" type="button" (click)="openQr()" aria-label="Show QR code">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h7v7H3V3Zm2 2v3h3V5H5Zm9-2h7v7h-7V3Zm2 2v3h3V5h-3ZM3 14h7v7H3v-7Zm2 2v3h3v-3H5Zm9-2h3v3h-3v-3Zm4 0h3v3h-3v-3Zm-4 4h3v3h-3v-3Zm4 0h3v3h-3v-3Z"/></svg>
+           <span class="icon-qr_code"></span>
           </button>
           <button class="round-button" type="button" (click)="share(person)" aria-label="Share contact">
             <span class="icon-share"></span>
@@ -42,14 +42,14 @@
 
         </div>
 
-        <p class="eyebrow">Digital business card</p>
+        <!-- <p class="eyebrow">Digital business card</p> -->
         <h1>{{ person.displayName }}</h1>
         <p class="role">{{ person.jobTitle }}</p>
         <p class="department">{{ person.department }}</p>
       </section>
 
       <button class="save-button" type="button" (click)="downloadVCard(person)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+        <span class="icon-person_add"></span>
         Save to contacts
       </button>
 
@@ -65,31 +65,61 @@
       <section class="quick-actions" aria-label="Quick contact actions">
         <a [href]="'tel:' + person.mobile"><span class="action-icon">
           <span class="icon-phone"></span>
-        </span><b>Call</b><small>Mobile</small></a>
+        </span><b>Mobile</b>
+        <!-- <small>Mobile</small> -->
+      </a>
+      <a [href]="'tel:' + person.office"><span class="action-icon">
+          <span class="icon-phone"></span>
+        </span><b>Office</b>
+        <!-- <small>Office</small> -->
+      </a>
         <a [href]="'mailto:' + person.email"><span class="action-icon">
-          <span class="icon-envelop"></span>
-        </span><b>Email</b><small>Work</small></a>
-        @if (person.whatsapp) {
+          <span class="icon-email"></span>
+        </span><b>Email</b>
+        <!-- <small>Work</small> -->
+      </a>
+        <!-- @if (person.whatsapp) {
           <a [href]="'https://wa.me/' + person.whatsapp.replace('+', '')" target="_blank" rel="noopener"><span class="action-icon">
             <span class="icon-whatsapp"></span>
-          </span><b>WhatsApp</b><small>Message</small></a>
-        }
+          </span><b>WhatsApp</b>
+          <small>Message</small>
+        </a>
+        } -->
       </section>
-
-      <section class="details" aria-label="Contact details">
+      <section class="quick-actions" aria-label="Quick contact actions">
+        <a [href]="'tel:' + person.website"><span class="action-icon">
+          <span class="icon-language"></span>
+        </span><b>Website</b>
+        <!-- <small>Mobile</small> -->
+      </a>
+      <a [href]="'https://maps.google.com/?q=' + person.address"><span class="action-icon">
+          <span class="icon-pin_drop"></span>
+        </span><b>Location</b>
+        <!-- <small>Office</small> -->
+      </a>
+        <!-- @if (person.whatsapp) {
+          <a [href]="'https://wa.me/' + person.whatsapp.replace('+', '')" target="_blank" rel="noopener"><span class="action-icon">
+            <span class="icon-whatsapp"></span>
+          </span><b>WhatsApp</b>
+          <small>Message</small>
+        </a>
+        } -->
+      </section>
+      <!-- <section class="details" aria-label="Contact details">
         <a [href]="'tel:' + person.office" class="detail-row"><span class="detail-icon">
           <span class="icon-phone"></span>
-        </span><span><small>Office</small><b>{{ person.office }} · Ext. {{ person.extension }}</b></span><span class="chevron">›</span></a>
+        </span><span><small>Office</small><b>{{ person.office }} · Ext. {{ person.extension }}</b></span><span class="chevron">›</span>
+      </a>
         <a [href]="'mailto:' + person.email" class="detail-row"><span class="detail-icon">
-          <span class="icon-envelop"></span>
+          <span class="icon-email"></span>
         </span><span><small>Email</small><b>{{ person.email }}</b></span><span class="chevron">›</span></a>
         <a [href]="person.website" target="_blank" rel="noopener" class="detail-row"><span class="detail-icon">
-          <span class="icon-earth"></span>
+          <span class="icon-language"></span>
         </span><span><small>Website</small><b>{{ person.websiteDisplay }}</b></span><span class="chevron">›</span></a>
         <a [href]="'https://maps.google.com/?q=' + person.address" target="_blank" rel="noopener" class="detail-row"><span class="detail-icon">
-          <span class="icon-location"></span>
+          <span class="icon-pin_drop"></span>
         </span><span><small>Office address</small><b>{{ person.address }}</b></span><span class="chevron">›</span></a>
-      </section>
+      </section> -->
 
       <section class="socials" aria-label="Social links">
         @for (social of person.socials; track social.label) {

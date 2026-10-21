@@ -4,8 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prestart": "node scripts/generate-pwa-manifests.mjs",
     "start": "ng serve --host 0.0.0.0",
+    "prebuild": "node scripts/generate-pwa-manifests.mjs",
     "build": "ng build && node scripts/copy-spa-fallback.mjs",
+    "prepwa:preview": "node scripts/generate-pwa-manifests.mjs",
+    "pwa:preview": "ng serve --configuration production --host 0.0.0.0 --ssl --ssl-cert .certs/lan.pem --ssl-key .certs/lan-key.pem",
     "wallet:server": "node --env-file=.env server/server.mjs",
     "test": "node --experimental-strip-types --test test/*.test.mjs"
   },

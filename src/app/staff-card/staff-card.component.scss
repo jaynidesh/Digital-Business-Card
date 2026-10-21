@@ -1,8 +1,219 @@
-.staff-page{min-height:100dvh;display:grid;place-items:center;padding:22px;background:radial-gradient(circle at 15% 10%,rgba(212,174,98,.26),transparent 28%),#e7efed}.staff-card{width:min(100%,460px);background:#fff;border-radius:28px;padding:22px;box-shadow:0 28px 80px rgba(4,39,35,.16)}header{display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:9px;color:#173f39;text-decoration:none;font-size:.85rem;font-weight:750}.brand span{width:32px;height:32px;display:grid;place-items:center;border-radius:10px 4px;background:#1E3868;color:white;font:800 1rem Georgia}header button{border:0;background:transparent;color:#6f8581;font-weight:700;cursor:pointer}.identity{display:flex;gap:14px;align-items:center;padding:24px 4px 18px}
-.avatar{width:60px;height:60px;flex:0 0 auto;display:grid;place-items:center;border-radius:50%;color:#fff;background:#1E3868;font:600 1.1rem Georgia}
-.avatar img{ width:100%;height:100%;object-fit:cover;border-radius:50%}
-.identity p{margin:0 0 3px;color:#00B2E2;text-transform:uppercase;font-size:.64rem;font-weight:800;letter-spacing:.12em}.identity h1{margin:0;color:#1E3868;font:600 1.5rem Georgia}.identity span{color:#6b817d;font-size:.78rem}.qr-panel{background:#f0f6f4;border:1px solid #dce9e6;border-radius:22px;padding:20px;text-align:center}.qr-panel p{margin:0 0 12px;color:#1b4a43;font-weight:800}.qr-panel img{display:block;width:min(100%,285px);margin:auto;border-radius:16px}.qr-panel small{display:block;color:#6f8581;margin-top:11px}.details-button,.share{width:100%;min-height:52px;border-radius:15px;margin-top:13px;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:800;text-decoration:none;cursor:pointer}.details-button{background:#1E3868;color:#fff}.details-button span{font-size:1.3rem}.share{border:1px solid #d7e5e2;background:#fff;color:#164a43}.security{text-align:center;color:#8a9b98;font-size:.7rem;margin:14px 0 0}.loading{color:#385f59}@media(max-width:480px){.staff-page{padding:0;display:block}.staff-card{min-height:100dvh;border-radius:0;width:100%}}
+.staff-page {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+    background: radial-gradient(circle at 15% 10%, rgba(212, 174, 98, .26), transparent 28%), #e7efed
+}
 
-.wallet-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}
-.wallet-button{flex:1 1 170px;min-height:48px;padding:10px 14px;border-radius:14px;background:#111;color:#fff;text-decoration:none;font-weight:700;font-size:.9rem;display:grid;place-items:center;text-align:center}
-.wallet-button:focus-visible{outline:3px solid #00b2e2;outline-offset:3px}
+.staff-card {
+    width: min(100%, 460px);
+    background: #fff;
+    border-radius: 28px;
+    padding: 22px;
+    box-shadow: 0 28px 80px rgba(4, 39, 35, .16)
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #173f39;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 750
+}
+
+.brand span {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border-radius: 10px 4px;
+    background: #1E3868;
+    color: white;
+    font: 800 1rem Georgia
+}
+
+// header button {
+//     border: 0;
+//     background: transparent;
+//     color: #6f8581;
+//     font-weight: 700;
+//     cursor: pointer
+// }
+
+.identity {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 24px 4px 18px
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #1E3868;
+    font: 600 1.1rem Georgia
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%
+}
+
+.identity p {
+    margin: 0 0 3px;
+    color: #6b817d;
+    text-transform: uppercase;
+    font-size: .64rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+
+    &.department{
+        margin-top: 5px;
+    }
+}
+
+.identity h1 {
+    margin: 0;
+    color: #1E3868;
+    font: 600 1.5rem Georgia
+}
+
+.identity span {
+    color: #00B2E2;
+    font-size: .78rem
+}
+
+.qr-panel {
+    background: #f0f6f4;
+    border: 1px solid #dce9e6;
+    border-radius: 22px;
+    padding: 20px;
+    text-align: center
+}
+
+.qr-panel p {
+    margin: 0 0 12px;
+    color: #1b4a43;
+    font-weight: 800
+}
+
+.qr-panel img {
+    display: block;
+    width: min(100%, 285px);
+    margin: auto;
+    border-radius: 16px
+}
+
+.qr-panel small {
+    display: block;
+    color: #6f8581;
+    margin-top: 11px
+}
+
+.details-button,
+.share {
+    width: 100%;
+    min-height: 52px;
+    border-radius: 15px;
+    margin-top: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer
+}
+
+.details-button {
+    background: #1E3868;
+    color: #fff
+}
+
+.details-button span {
+    font-size: 1.3rem
+}
+
+.share {
+    border: 1px solid #d7e5e2;
+    background: #fff;
+    color: #164a43
+}
+
+.security {
+    text-align: center;
+    color: #8a9b98;
+    font-size: .7rem;
+    margin: 14px 0 0
+}
+
+.loading {
+    color: #385f59
+}
+
+@media(max-width:480px) {
+    .staff-page {
+        padding: 0;
+        display: block
+    }
+
+    .staff-card {
+        min-height: 100dvh;
+        border-radius: 0;
+        width: 100%
+    }
+}
+
+.wallet-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 13px
+}
+
+.wallet-button {
+    flex: 1 1 170px;
+    min-height: 48px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #111;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: .9rem;
+    display: grid;
+    place-items: center;
+    text-align: center
+}
+
+.wallet-button:focus-visible {
+    outline: 3px solid #00b2e2;
+    outline-offset: 3px
+}
+
+.round-button {
+    width: 42px;
+    height: 42px;
+    border: 1px solid #dfeae7;
+    background: #f7fbfa;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+}

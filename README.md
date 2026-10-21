@@ -16,6 +16,14 @@ Open `/` to see three demo profiles.
 
 Each profile has two different opaque tokens. The demo directory at `/` and the profile data are bundled into the frontend, so these links are public identifiers, not access controls. In production, profile lookup and token management must be handled by the backend.
 
+## Install as an app
+
+Each public contact page and staff QR page has its own web app manifest. Installing `/contact/{public-token}` or `/staff/{staff-token}` opens that same page from the home-screen icon; the two pages have different app IDs. The demo manifests are generated from `data/mock-profiles.json` before `npm start` and `npm run build`. Restart the dev server after editing the fixture. When contacts come from the backoffice, it must provide equivalent per-contact manifests or they must be generated during deployment.
+
+On Android, open the **production build on a publicly reachable HTTPS site** in Chrome, then use **Install app**. `http://<local-ip>:4200` is not a secure origin, so **Add to Home screen** may only create a browser shortcut. The normal `npm start` also disables Angular's service worker. Your server must serve the manifest and icons at their built URLs and return the Angular `index.html` for direct `/contact/...` and `/staff/...` requests. Remove any old home-screen shortcut or installation made with the root manifest before testing a specific page again.
+
+For local service-worker testing, create a certificate for your LAN IP that the Android device trusts, then run `npm run pwa:preview`. This command serves the production Angular configuration over HTTPS using `.certs/lan.pem` and `.certs/lan-key.pem`; those files are ignored by Git. With `mkcert` installed, run `mkdir -p .certs` and `mkcert -cert-file .certs/lan.pem -key-file .certs/lan-key.pem <local-ip>`. Use `mkcert -CAROOT` to locate its `rootCA.pem`, then install that CA certificate on the Android device; trusting it on the computer alone is insufficient. Local HTTPS is useful for testing, but Android may still make a shortcut if its WebAPK service cannot install the app from a private LAN address.
+
 ## Wallet passes
 
 The public and staff cards show **Add to Apple Wallet** on iPhone and iPad, **Add to Google Wallet** on Android, and both choices on other devices. The buttons call the same-origin wallet service using the contact's public token. Apple receives a signed `.pkpass`; Google creates or updates the contact's Generic Pass through the Wallet API and redirects to a signed `pay.google.com` save link. A wallet pass contains a QR code linking back to the public card.

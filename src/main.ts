@@ -16,8 +16,5 @@ bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'top' })), provideServiceWorker('ngsw-worker.js', {
             enabled: !isDevMode(),
             registrationStrategy: 'registerWhenStable:30000'
-          }), provideServiceWorker('ngsw-worker.js', {
-            enabled: !isDevMode(),
-            registrationStrategy: 'registerWhenStable:30000'
           })]
 }).catch(console.error);

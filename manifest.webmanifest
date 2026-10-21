@@ -1,10 +1,12 @@
 {
   "name": "SBM Contact",
   "short_name": "SBM Contact",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#083f38",
   "icons": [
     {
       "src": "icons/icon-72x72.png",
