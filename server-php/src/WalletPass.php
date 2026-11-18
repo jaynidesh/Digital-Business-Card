@@ -175,7 +175,9 @@ function loadProfilePhoto(array $profile): ?string {
     }
     if (preg_match('/^[A-Za-z][A-Za-z0-9+.-]*:/', $photo)) throw new RuntimeException('Unsupported contact photo URL');
     $relative = preg_replace('~^assets/~', '', ltrim($photo, '/'));
-    $assets = realpath(__DIR__ . '/../../src/assets');
+    $assets = realpath(__DIR__ . '/../../dist/assets');
+    if ($assets === false) $assets = realpath(__DIR__ . '/../../src/assets');
+    if ($assets === false) throw new RuntimeException('Contact assets directory not found');
     $path = realpath($assets . '/' . $relative);
     if ($path === false || !str_starts_with($path, $assets . DIRECTORY_SEPARATOR) || !is_file($path)) {
         throw new RuntimeException('Contact photo not found');

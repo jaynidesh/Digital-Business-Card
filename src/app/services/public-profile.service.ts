@@ -1,20 +1,29 @@
-import { Injectable } from '@angular/core';
-import { Observable, delay, of, throwError } from 'rxjs';
-import profiles from '../../../data/mock-profiles.json';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 import { StaffProfile } from '../models/staff-profile';
-
-export const MOCK_PROFILES: StaffProfile[] = profiles as StaffProfile[];
 
 @Injectable({ providedIn: 'root' })
 export class PublicProfileService {
+  private readonly http = inject(HttpClient);
+
+  getProfiles(): Observable<StaffProfile[]> {
+    return this.http.get<StaffProfile[]>('/data/mock-profiles.json');
+  }
+
   getByToken(token: string): Observable<StaffProfile> {
-    // Replace this mock with GET /api/v1/public/contact/{token} when backoffice is available.
-    const profile = MOCK_PROFILES.find(item => item.publicToken === token);
-    return profile ? of(profile).pipe(delay(320)) : throwError(() => new Error('unavailable'));
+    return this.findProfile('publicToken', token);
   }
 
   getByStaffToken(token: string): Observable<StaffProfile> {
-    const profile = MOCK_PROFILES.find(item => item.staffToken === token);
-    return profile ? of(profile).pipe(delay(240)) : throwError(() => new Error('unavailable'));
+    return this.findProfile('staffToken', token);
+  }
+
+  private findProfile(field: 'publicToken' | 'staffToken', token: string): Observable<StaffProfile> {
+    return this.getProfiles().pipe(map(profiles => {
+      const profile = profiles.find(item => item[field] === token);
+      if (!profile) throw new Error('unavailable');
+      return profile;
+    }));
   }
 }

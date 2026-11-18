@@ -90,6 +90,8 @@ The current actions are plain text buttons. Before public release, use the [Appl
 
 ## Backoffice integration
 
+The frontend currently loads `/data/mock-profiles.json` at runtime; the build publishes this file from `data/`. For the UAT `dist/` + `api/` layout, follow [the PHP deployment guide](server-php/README.md#uat-deployment-uat-peoplesbmgroupmu).
+
 Replace the mock implementation in `PublicProfileService` with the backoffice's public contact endpoint, such as `GET /api/v1/public/contact/{token}`. The backoffice should resolve and manage both public and staff tokens. It can also provide a vCard endpoint in place of the browser-generated file.
 
 Wallet settings belong on whichever server signs the passes: the backoffice if it takes over issuance, or the Node or PHP wallet service if it remains deployed. Keep the Apple certificate and private key, Google issuer ID and service-account key, and public base URL on that server. The Angular frontend only selects the device-appropriate button and calls the same-origin `/api/v1/public/contact/{token}/wallet/{apple|google}` endpoint; it must never receive signing keys. If the backoffice implements these two routes, update the development proxy to point to it and retire the demo wallet services. Until then, both services read `data/mock-profiles.json` rather than the backoffice's authoritative profile store.

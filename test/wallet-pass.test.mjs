@@ -23,7 +23,7 @@ test('Google pass includes public contact details and links from the profile fix
   assert.equal(pass.header.defaultValue.value, profile.displayName);
   assert.equal(pass.subheader.defaultValue.value, profile.jobTitle);
   assert.equal(fields.mobile, profile.mobileDisplay);
-  assert.equal(fields.office, `${profile.office} ext. ${profile.extension}`);
+  assert.equal(fields.office, profile.extension ? `${profile.office} ext. ${profile.extension}` : profile.office);
   assert.equal(fields.email, profile.email);
   assert.equal(fields.department, profile.department);
   assert.equal(fields.role, profile.jobTitle);

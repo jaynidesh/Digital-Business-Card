@@ -108,7 +108,7 @@
       <!-- <section class="details" aria-label="Contact details">
         <a [href]="'tel:' + person.office" class="detail-row"><span class="detail-icon">
           <span class="icon-phone"></span>
-        </span><span><small>Office</small><b>{{ person.office }} · Ext. {{ person.extension }}</b></span><span class="chevron">›</span>
+        </span><span><small>Office</small><b>{{ person.office }}@if (person.extension) { · Ext. {{ person.extension }}}</b></span><span class="chevron">›</span>
       </a>
         <a [href]="'mailto:' + person.email" class="detail-row"><span class="detail-icon">
           <span class="icon-email"></span>

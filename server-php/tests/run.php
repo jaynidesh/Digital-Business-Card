@@ -52,7 +52,7 @@ run('Google pass matches the Node profile fields and URI IDs', function () use (
     $links = array_column($pass['linksModuleData']['uris'], 'uri', 'id');
     check($pass['header']['defaultValue']['value'] === $profile['displayName'], 'name missing');
     check($fields['mobile'] === $profile['mobileDisplay'], 'mobile missing');
-    check($fields['office'] === $profile['office'] . ' ext. ' . $profile['extension'], 'office missing');
+    check($fields['office'] === $profile['office'] . (!empty($profile['extension']) ? ' ext. ' . $profile['extension'] : ''), 'office missing');
     check($fields['address'] === $profile['address'], 'address missing');
     check($links['contact'] === 'https://contacts.example.test/contact/' . $profile['publicToken'], 'contact URL differs');
     check($links['mobile'] === 'tel:' . $profile['mobile'], 'mobile URI differs');
@@ -170,7 +170,7 @@ run('Apple pass is signed and contains the public QR URL', function () use ($pro
         check($pass['barcodes'][0]['message'] === 'https://contacts.example.test/contact/' . $profile['publicToken'], 'Apple QR URL differs');
         $back = array_column($pass['generic']['backFields'], 'value', 'key');
         check($back['mobile'] === $profile['mobileDisplay'], 'Apple mobile display differs');
-        check($back['office'] === $profile['office'] . ' ext. ' . $profile['extension'], 'Apple office display differs');
+        check($back['office'] === $profile['office'] . (!empty($profile['extension']) ? ' ext. ' . $profile['extension'] : ''), 'Apple office display differs');
         check($back['website'] === $profile['websiteDisplay'], 'Apple website display differs');
         check($manifest['pass.json'] === sha1($passJson), 'manifest hash incorrect');
         foreach (['thumbnail.png' => 90, 'thumbnail@2x.png' => 180, 'thumbnail@3x.png' => 270] as $name => $size) {
