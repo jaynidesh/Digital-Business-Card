@@ -11,7 +11,7 @@
     "mobile": "+23052523456",
     "mobileDisplay": "+230 5252 3456",
     "office": "+2302028130",
-    "extension": "8130",
+    "extension": "",
     "email": "vimal.naikeny@sbmgroup.mu",
     "website": "https://www.sbmgroup.mu/",
     "websiteDisplay": "https://www.sbmgroup.mu",
@@ -22,6 +22,52 @@
         "label": "LinkedIn",
         "url": "https://www.linkedin.com",
         "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
+      }
+    ]
+  },
+  {
+    "staffToken": "60iWGd4Pcc4Y5jIZSFr2929F",
+    "publicToken": "Xr1_wceLZpmJPyorqolHcoVZ",
+    "displayName": "Kamal Bhojah",
+    "initials": "KB",
+    "photo": "assets/images/man.jpg",
+    "jobTitle": "Head of Enterprise Architecture (group)",
+    "department": "SBM Technology",
+    "company": "SBM Bank (Mauritius) Ltd",
+    "mobile": "+23052524786",
+    "mobileDisplay": "+230 5252 4786",
+    "office": "+2302021558",
+    "extension": "",
+    "email": "kamal.bhojah@sbmgroup.mu",
+    "website": "https://www.sbmgroup.mu/",
+    "websiteDisplay": "https://www.sbmgroup.mu",
+    "address": "7 Exchange Square, Wall Street, Cybercity, Ebene, Republic of Mauritius",
+    "whatsapp": "+23052524786",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com",
+        "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
       }
     ]
   },
@@ -37,7 +83,7 @@
     "mobile": "+23052524786",
     "mobileDisplay": "+230 5252 4786",
     "office": "+2302021558",
-    "extension": "1558",
+    "extension": "",
     "email": "nourani.madarbux@sbmgroup.mu",
     "website": "https://www.sbmgroup.mu/",
     "websiteDisplay": "https://www.sbmgroup.mu",
@@ -48,6 +94,16 @@
         "label": "LinkedIn",
         "url": "https://www.linkedin.com",
         "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
       }
     ]
   },
@@ -63,37 +119,27 @@
     "mobile": "+23052524786",
     "mobileDisplay": "+230 5252 4786",
     "office": "+2302024607",
-    "extension": "4607",
+    "extension": "",
     "email": "nousrina.peerbux@sbmgroup.mu",
     "website": "https://www.sbmgroup.mu/",
     "websiteDisplay": "https://www.sbmgroup.mu",
     "address": "Corporate Office, SBM Tower, 1 Queen Elizabeth II Avenue, Port Louis, Republic of Mauritius",
     "whatsapp": "",
-    "socials": []
-  },
-  {
-    "staffToken": "60iWGd4Pcc4Y5jIZSFr2929F",
-    "publicToken": "Xr1_wceLZpmJPyorqolHcoVZ",
-    "displayName": "Kamal Bhojah",
-    "initials": "KB",
-    "photo": "assets/images/man.jpg",
-    "jobTitle": "Head of Enterprise Architecture (group)",
-    "department": "SBM Technology",
-    "company": "SBM Bank (Mauritius) Ltd",
-    "mobile": "+23052524786",
-    "mobileDisplay": "+230 5252 4786",
-    "office": "+2302021558",
-    "extension": "1558",
-    "email": "kamal.bhojah@sbmgroup.mu",
-    "website": "https://www.sbmgroup.mu/",
-    "websiteDisplay": "https://www.sbmgroup.mu",
-    "address": "7 Exchange Square, Wall Street, Cybercity, Ebene, Republic of Mauritius",
-    "whatsapp": "+23052524786",
     "socials": [
       {
         "label": "LinkedIn",
         "url": "https://www.linkedin.com",
         "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
       }
     ]
   },
@@ -109,7 +155,7 @@
     "mobile": "+23052574795",
     "mobileDisplay": "+230 5257 4795",
     "office": "+2302021238",
-    "extension": "1238",
+    "extension": "",
     "email": "lawkousse.dajee@sbmgroup.mu",
     "website": "https://www.sbmgroup.mu/",
     "websiteDisplay": "https://www.sbmgroup.mu",
@@ -120,6 +166,52 @@
         "label": "LinkedIn",
         "url": "https://www.linkedin.com",
         "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
+      }
+    ]
+  },
+  {
+    "staffToken": "demoStaffToken_A7x9K2mP",
+    "publicToken": "demoPublicToken_Q4n8R1vZ",
+    "displayName": "Alex Morgan",
+    "initials": "AM",
+    "photo": "assets/images/man.jpg",
+    "jobTitle": "Senior Officer, IT",
+    "department": "Digital Channels, IT",
+    "company": "SBM Bank (Mauritius) Ltd",
+    "mobile": "+230 5000 1234",
+    "mobileDisplay": "+230 5000 1234",
+    "office": "+230 200 1234",
+    "extension": "1234",
+    "email": "alex.morgan@example.com",
+    "website": "https://www.sbmgroup.mu/",
+    "websiteDisplay": "www.sbmgroup.mu",
+    "address": "1 Demo Square, Cybercity, Ebene, Republic of Mauritius",
+    "whatsapp": "+230 5000 1234",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com",
+        "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com",
+        "icon": "instagram"
       }
     ]
   }

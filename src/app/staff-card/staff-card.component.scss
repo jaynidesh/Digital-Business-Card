@@ -79,7 +79,7 @@ header {
     margin: 0 0 3px;
     color: #6b817d;
     text-transform: uppercase;
-    font-size: .64rem;
+    font-size: 10px;
     font-weight: 800;
     letter-spacing: .12em;
 
@@ -96,7 +96,8 @@ header {
 
 .identity span {
     color: #00B2E2;
-    font-size: .78rem
+    font-size: 12px;
+    font-weight: bold;
 }
 
 .qr-panel {
@@ -216,4 +217,9 @@ header {
     display: grid;
     place-items: center;
     cursor: pointer;
+    padding: 0;
+
+    span{
+        color: #1E3868;
+    }
 }

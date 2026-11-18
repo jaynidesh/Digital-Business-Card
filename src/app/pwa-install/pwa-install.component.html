@@ -1,0 +1,45 @@
+@if (routeAllowed() && install.visible()) {
+  <aside
+    #popup
+    class="install-popup"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="install-title"
+    aria-describedby="install-description"
+    aria-live="polite"
+    tabindex="-1"
+    (keydown.escape)="close()"
+    (focusin)="onPopupFocus()"
+    (focusout)="onPopupBlur($event)"
+  >
+    <div class="install-brand">
+      <img src="/assets/images/logo_sbm.png" alt="" width="80">
+      <button class="install-close" type="button" aria-label="Close install prompt" (click)="close()">×</button>
+    </div>
+    <h2 id="install-title">Install Our App</h2>
+    <p id="install-description">Install our application on your device for faster and easier access.</p>
+
+    @if (install.mode() === 'ios-safari' || install.mode() === 'ios-other') {
+      @if (install.mode() === 'ios-other') {
+        <p class="install-note">If your browser does not offer Add to Home Screen, open this page in Safari.</p>
+      }
+      <ol class="install-steps">
+        <li>Tap the Share button in your browser.</li>
+        <li>Choose <strong>Add to Home Screen</strong>.</li>
+        <li>If shown, turn on <strong>Open as Web App</strong>.</li>
+        <li>Tap <strong>Add</strong>.</li>
+      </ol>
+    } @else if (install.mode() === 'mac-safari') {
+      <p class="install-note">On macOS Sonoma or later, choose <strong>File → Add to Dock</strong> in Safari, then click <strong>Add</strong>.</p>
+    } @else if (install.mode() === 'manual') {
+      <p class="install-note">The browser prompt is unavailable. Open the browser menu and choose <strong>Install app</strong> if offered.</p>
+    }
+
+    <div class="install-actions">
+      @if (install.canPrompt()) {
+        <button class="install-primary" type="button" (click)="install.install()">Install App</button>
+      }
+      <button class="install-later" type="button" (click)="close()">Maybe Later</button>
+    </div>
+  </aside>
+}

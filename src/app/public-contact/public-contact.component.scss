@@ -67,6 +67,11 @@
     cursor: pointer;
     font-size: 20px;
     line-height: 42px;
+    padding: 0;
+
+    span{
+        color: #1E3868;
+    }
 }
 
 .round-button svg {
