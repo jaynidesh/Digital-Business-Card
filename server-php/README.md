@@ -1,115 +1,157 @@
-# PHP Wallet service
+# PHP contact and Wallet service
 
-This directory is a PHP alternative to the existing `server/` Node service. It serves the same two wallet URLs and uses the same profile fixture and `.env` credentials. No Laravel or Composer package is required.
-
-From the project root, run:
-
-```bash
-php -S 127.0.0.1:4400 -t server-php/public server-php/public/index.php
-```
-
-Keep the Angular app running separately with `npm start`. Its existing `/api` proxy targets port 4400. Stop the Node wallet service first, since the two services cannot bind the same port. The PHP service requires PHP 8.1+ with cURL, OpenSSL, GD and Zip extensions, and the `openssl` command on the server. The EXIF extension is used when available to rotate JPEG profile photos correctly.
-
-The entry point is `public/index.php`; only `server-php/public/` should be exposed as the PHP document root. It reads profiles from the project root at `data/mock-profiles.json`, falling back to `dist/data/mock-profiles.json`. It prefers `.env` in the service directory, then falls back to the project-root `.env`; process environment variables take precedence. Relative credential paths resolve against the directory containing the selected `.env`, so the existing project-root setup can still reuse `server/credentials/`. Do not place secrets in `server-php/public/` or the Angular build.
-
-Apple requests create a signed `.pkpass` using the pass certificate, private key and WWDR certificate. The pass includes 90, 180 and 270 pixel PNG thumbnails generated from `profile.photo` when the image loads; an unavailable photo does not prevent pass issuance. Google requests obtain a service-account token, create or update the Generic Pass class and object through Google's Wallet API, then redirect to an ID-only signed save URL. The Google object uses a profile photo as its logo only when it has a public HTTPS URL. Changes to an existing Google pass are sent when its Add to Google Wallet link is opened again. The PHP service needs outbound HTTPS access to Google's OAuth and Wallet Objects APIs and to any remote profile photos.
-
-For production, route `GET /api/v1/public/contact/{public-token}/wallet/{apple|google}` on the same origin as the Angular app to this PHP entry point. Configure your web server to forward those URLs to `public/index.php`; the PHP built-in server does this with the command above. Deploy `server-php/`, `src/assets/images/`, `data/mock-profiles.json`, `.env`, and the credential files together while keeping everything except `server-php/public/` outside the document root. The PHP code uses its own `assets/` images for pass icons and logos and `src/assets/images/` for local profile photos. Unknown tokens return 404 and unconfigured providers return 503.
-
-For a deployment with sibling `api/` and `dist/` directories, place this service in `api/` (entry point `api/public/index.php`). Profile loading first checks `data/mock-profiles.json` in their shared parent directory, then falls back to `dist/data/mock-profiles.json`. The service prefers `api/.env` when present (credential paths then resolve relative to `api/`); otherwise it uses the shared-parent `.env` and resolves credential paths relative to that parent.
-
-Run the offline tests with:
-
-```bash
-php server-php/tests/run.php
-```
-
-The tests use generated keys and a mocked Google HTTP client; they do not issue live Google passes.
-
-php -S 127.0.0.1:4400 -t server-php/public server-php/public/index.php
+This is the backend for the secured Angular app. It serves individual contact records and PWA manifests, and signs Apple/Google Wallet passes. It reads an authenticated encrypted profile store; there is no plaintext JSON fallback or listing endpoint. PHP 8.1+ with Sodium, OpenSSL, cURL and Zip is required. GD is needed for optional contact thumbnails, and EXIF is optional for photo orientation. Local signing tests use the `openssl` executable.
 
 ## UAT deployment: uat-people.sbmgroup.mu
 
-Use this filesystem layout (the parent path is illustrative):
+```text
+C:\Sites\People\
+  dist\                         # contents of build/, served at /
+    index.html
+    web.config
+    assets\...
+  api\                          # contents of server-php/
+    .env
+    private\                    # never mapped to an HTTP URL
+      profiles.enc.json
+      profiles.key
+    credentials\...
+    src\...
+    assets\...
+    public\                     # IIS /api application physical path
+      index.php
+      web.config
+```
+
+1. Build with Node 22.12+ (`npm ci`, `npm run build`). The build fails if it finds profile tokens, datasets, legacy per-contact manifest files, or inline styles/scripts in HTML.
+2. Encrypt the current source data locally or on a secured administration host:
+
+   ```text
+   php server-php/tools/encrypt-profiles.php data/mock-profiles.json
+   ```
+
+   This creates `server-php/private/profiles.enc.json` and a random 32-byte `profiles.key`. It reuses the existing key on updates and writes a fresh random nonce each time. Both files are ignored by Git. A custom private output directory can be supplied as a second argument. The source JSON is an administration input only: do not upload it under `dist` or any web root.
+3. Deploy `build/` contents to `dist/`, and `server-php/` contents to `api/`. Transfer the encrypted store and key separately through your approved secure deployment channel. Restrict the key's NTFS ACL to the API application-pool identity and authorized administrators; on Windows, `chmod` is not a replacement for NTFS ACL configuration. Prefer placing the key in a separate protected location and set `PROFILES_KEY_FILE` to its absolute path. Back up it securely: losing it makes the encrypted store unreadable.
+4. Copy `api/.env.example` to `api/.env` and configure `PUBLIC_BASE_URL=https://uat-people.sbmgroup.mu` and the Apple/Google signing settings. `PROFILES_FILE` and `PROFILES_KEY_FILE` default to `private/profiles.enc.json` and `private/profiles.key`, relative to `api/`; absolute Windows paths are supported. Other credential paths resolve relative to the selected `.env` directory. `api/.env` takes precedence over the legacy parent `.env`; process environment variables override file values.
+5. Set the IIS website physical path to `dist`. Add a child **Application** named `api`, pointing to `api/public`, not the whole `api` directory. Install IIS URL Rewrite, enable CGI/FastCGI, and map `*.php` to the installed `php-cgi.exe` via `FastCgiModule`. Executable paths and FastCGI settings are host-specific and are not hardcoded in `web.config`.
+6. Grant the application-pool identity read access to the encrypted store, key, PHP source, credentials and `dist/assets`. Apple signing uses PHP's OpenSSL extension and needs write access to PHP's temp directory. Google issuance needs outbound HTTPS to Google APIs.
+
+## Required migration from the public JSON version
+
+Deploy these changes together; the old frontend JSON lookup is incompatible with the secured backend.
+
+- Remove the old `dist/data/` and `dist/pwa/` directories from the server. Uploading files over an existing deployment does not remove stale files. The new IIS configuration also blocks `/data` and `/pwa`, including files left behind accidentally.
+- Replace the frontend build, `ngsw.json`, worker files, and both IIS configurations. Use a clean `dist` deployment. Verify the old JSON URL returns 404, not JSON or SPA HTML.
+- Clear the site's stored data/service-worker caches on previously used devices and reopen the app. Old installed app versions may retain the previously public JSON and manifest indexes until those caches are removed. The new version deliberately does not cache contact API responses: offline contact lookup is no longer supported.
+- Previously published tokens/data cannot be made secret retroactively. Rotate public/staff tokens and reissue links/QR codes if those tokens must now act as access capabilities. This change does not rotate existing links automatically.
+
+## Data protection and endpoints
+
+The encrypted store uses PHP Sodium `secretbox` authenticated encryption with a random key and nonce. Tampering or a wrong key fails closed. The key never enters the frontend bundle or an API response. TLS protects responses in transit; configure HTTPS on IIS using your existing certificate.
+
+Available endpoints (no login required):
+
+| URL | Response |
+| --- | --- |
+| `POST /api/v1/public/contact/{publicToken}` | Encrypted allowlisted contact, excluding its staff token |
+| `POST /api/v1/staff/contact/{staffToken}` | Encrypted allowlisted contact, excluding its staff token |
+| `GET` either contact URL followed by `/manifest` | That card's PWA install manifest |
+| `/api/v1/public/contact/{publicToken}/wallet/apple` | Signed `.pkpass` |
+| `/api/v1/public/contact/{publicToken}/wallet/google` | Redirect to Google Wallet |
+
+There is no endpoint that enumerates contacts. The homepage no longer lists staff cards. Contact and manifest responses use `Cache-Control: no-store` and `Referrer-Policy: no-referrer`. Profile lookup does not require valid wallet credentials. `/api/` intentionally returns `404 Not found`; missing provider configuration returns 503. For a 500, check the PHP log (`Contact lookup failed:` or `Wallet pass generation failed:`).
+
+A person who possesses a contact or staff link can read that contact's displayed details; this is bearer-link access, not staff authentication. If staff cards require verified employee identity, add SSO/authorization. Do not log complete bearer-token paths in analytics, proxies or IIS logs; apply the organization's log redaction/retention policy. Public contact photos remain publicly served assets.
+
+## Strict Content Security Policy
+
+`public/web.config` in the repository is copied into `build/web.config`. It applies a CSP without `unsafe-inline` or `unsafe-eval`; inline style attributes and script handlers are blocked. Component CSS is bundled into external stylesheets with component-host selector scoping. Critical CSS and font inlining are disabled. API rewrites live in `server-php/public/web.config`.
+
+The allowed image sources are same-origin, `data:` for QR codes, and `https://media.licdn.com` for the existing remote profile photos. Additional remote images require a deliberate CSP allowlist change or hosting the images locally. The headers are enforced by IIS; `ng serve` does not read `web.config`.
+
+Keep `index.html`, contact routes and all static assets on the app's origin. The IIS application mapping preserves the original `/api/...` request URI for PHP route matching. A `500.19` error requires inspecting the IIS detailed error code for missing URL Rewrite or locked configuration sections. Configure PHP FastCGI correctly before exposing the application.
+
+## Local development and validation
+
+Generate the private store, then run:
 
 ```text
-/srv/people/
-  dist/                    # contents of the Angular build/ directory
-    index.html
-    data/mock-profiles.json
-    assets/images/...
-  api/                     # contents of server-php/
-    .env                   # copy .env.example and fill in signing settings
-    credentials/...
-    public/index.php
-    src/...
-    assets/...
+php -S 127.0.0.1:4400 -t server-php/public server-php/public/index.php
+npm start
 ```
 
-Build with Node 22.12+ using `npm ci` and `npm run build`, then upload the **contents of `build/`** to `dist/`. Upload `server-php/` contents to `api/`. The build includes the profile JSON at `/data/mock-profiles.json`; the frontend loads it at runtime. PHP reads that same file from disk at `dist/data/mock-profiles.json` when the development `data/mock-profiles.json` is absent. Do not leave an outdated `data/` directory beside `dist/`, as that development path takes precedence.
+The Angular proxy forwards `/api` to port 4400. Use PHP for the secured frontend: the legacy Node wallet-only service does not implement encrypted contact lookup or manifests.
 
-Copy `api/.env.example` to `api/.env`, set `PUBLIC_BASE_URL=https://uat-people.sbmgroup.mu`, and supply the actual Apple and/or Google signing settings. When `api/.env` exists, credential paths such as `credentials/google-service-account.json` resolve relative to `api/`. Otherwise the legacy shared-parent `.env` and relative paths still apply. Process environment variables override file settings. Never upload real credentials into `dist/` or `api/public/`.
+Checks:
 
-The web server must:
-
-- Serve `/` and static files from `dist/`.
-- Route `/contact/...` and `/staff/...` to `dist/index.html` for direct links and refreshes.
-- Forward `/api` and `/api/...` to `api/public/index.php`, preserving the full original request URI including `/api`.
-- Return 404 for missing `/data/` files rather than serving the Angular HTML.
-- Expose only the PHP front controller, never `api/.env`, credentials, or source files.
-
-For Nginx, the relevant directives inside your existing HTTPS server block can look like this. Adapt the filesystem path and PHP-FPM socket to your host; retain your existing TLS configuration:
-
-```nginx
-root /srv/people/dist;
-index index.html;
-
-location ~ ^/api(?:/|$) {
-    include fastcgi_params;
-    fastcgi_param SCRIPT_FILENAME /srv/people/api/public/index.php;
-    fastcgi_param DOCUMENT_ROOT /srv/people/api/public;
-    fastcgi_param REQUEST_URI $request_uri;
-    fastcgi_pass unix:/run/php/php8.3-fpm.sock;
-}
-location /data/ {
-    add_header Cache-Control "no-store";
-    try_files $uri =404;
-}
-location / {
-    try_files $uri $uri/ /index.html;
-}
+```text
+npm test
+php server-php/tests/run.php
+php server-php/tests/profile-security.php
+npm run build
 ```
 
-If using Apache/IIS instead, configure the equivalent mappings above. The Angular service worker excludes `/api` and `/data` from its navigation fallback. The Angular service worker uses a network-first profile cache: previously loaded data is available offline for up to seven days, with a five-second network timeout. The `/data/` HTTP response should use `Cache-Control: no-store` to avoid a separate stale browser HTTP cache. Offline or slow requests may show the last cached profile. Rebuild when adding or changing tokens so the per-contact PWA manifests are regenerated.
+Tests cover encrypted round trips, tamper/wrong-key rejection, response allowlists, lookup without wallet credentials, deployed directory layout, CSP source constraints and existing wallet signing behavior. Validate runtime CSP enforcement and real Apple/Google issuance on IIS after deployment.
 
-Verify after upload:
+References: [PHP authenticated encryption](https://www.php.net/manual/en/function.sodium-crypto-secretbox.php), [Angular build configuration](https://angular.dev/reference/configs/workspace-config), [IIS URL Rewrite](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference), [PHP on IIS](https://www.php.net/manual/en/install.windows.iis.php).
 
-1. `/data/mock-profiles.json` returns JSON, and `/contact/{publicToken}` displays that record after a refresh.
-2. `/api/` returns `404 Not found`; this is intentional, not a health check or pass endpoint.
-3. `/api/v1/public/contact/{publicToken}/wallet/apple` downloads a signed pass when Apple is configured, or returns 503 when it is not.
-4. The equivalent `/google` URL redirects to Google Wallet when configured. A 500 requires checking the PHP log entry beginning `Wallet pass generation failed:`.
+## Encrypted contact responses (no authentication)
 
-The public JSON currently contains staff tokens and contact details, and the homepage lists the profiles. These staff links are not an authentication boundary. Restricted staff data requires an authenticated backend rather than this public fixture setup.
+Angular creates a fresh, non-extractable ECDH P-256 private key for each contact lookup. It POSTs `{ "version": 1, "clientPublicKey": "<base64 SPKI public key>" }` to the contact URL. PHP generates its own ephemeral P-256 key, derives the shared secret, uses HKDF-SHA-256 with a random 32-byte salt, and encrypts the allowlisted contact JSON with AES-256-GCM (12-byte IV, 16-byte tag). The protocol context includes the exact endpoint path for both HKDF and authenticated additional data.
 
-Local validation: `npm test` (Node 22.12+ and PHP available), `php server-php/tests/run.php`, and `npm run build`. The deployment regression test constructs the sibling `api/` and `dist/` directories and verifies profile lookup, `api/.env`, local photos, and handling of `/api/` without signing credentials.
+The response is an envelope with `version`, `algorithm`, `serverPublicKey`, `salt`, `iv`, and `ciphertext` (base64 ciphertext followed by its authentication tag). Angular derives the same key and decrypts in memory before displaying the card. Keys are never embedded in JavaScript or stored in local/session storage. Requests use a fresh key pair; decryption failure has no plaintext fallback. Direct GET contact requests return 405. Error responses contain only generic plaintext errors, never contact details.
 
-## IIS URL Rewrite configuration
+Deploy the frontend and PHP changes together, and permit POST through IIS/FastCGI/request filtering. No new persistent response-encryption key or `.env` setting is needed. HTTPS remains mandatory: TLS authenticates the exchange, and browser Web Crypto requires a secure context (localhost is permitted for development). This extra encryption does not replace HTTPS or restrict who can open a card. Anyone with a valid token can create their own key pair and decrypt that contact; browser users can inspect the displayed plaintext.
 
-Two configuration files are included:
+PWA manifests, Wallet files and Google redirects keep their browser/platform-required formats. Manifests still contain the card name and install URL. Existing links and QR codes remain valid; there is no authentication step.
 
-- `public/web.config` (at the repository root) is copied by the Angular build to `build/web.config`. Deploy it as `dist/web.config`.
-- `server-php/public/web.config` is deployed as `api/public/web.config` alongside `index.php`.
+Interoperability tests run PHP encryption against the same TypeScript Web Crypto decryption code used by Angular, plus actual PHP HTTP POSTs. They cover ciphertext tampering, a wrong private key, a different endpoint context, malformed requests, plaintext GET rejection and unchanged manifest delivery.
 
-In IIS Manager:
+Protocol references: [Web Crypto ECDH/HKDF](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/deriveKey), [PHP ECDH](https://www.php.net/openssl-pkey-derive), [PHP HKDF](https://www.php.net/hash-hkdf).
 
-1. Set the website physical path to the absolute path of `dist`, for example `C:\Sites\People\dist`.
-2. Add a child **Application** with alias **api** and physical path `C:\Sites\People\api\public`. The application must point to `public`, not the whole `api` directory. The other PHP files remain in `C:\Sites\People\api\src`, with `.env` in `C:\Sites\People\api`.
-3. Install the IIS URL Rewrite module and enable CGI/FastCGI. Configure a PHP handler mapping for `*.php` using the installed `php-cgi.exe` and `FastCgiModule`. No PHP executable path is hardcoded in these files because that path depends on the server.
-4. Give the API application-pool identity read access to `api` and `dist/data`, and read access to `dist/assets` for contact photos. Pass generation also needs write access to PHP's temporary directory and permission to run the `openssl` command.
-5. Upload the build and PHP files to their respective folders. Keep the full `/api/...` original request URI; PHP matches routes using `REQUEST_URI`.
+## IIS 405 on encrypted contact POST
 
-The app configuration serves actual files and rewrites Angular navigation to `index.html`. It excludes `/api`, data, assets, manifests, and missing file URLs from that fallback. The API configuration rewrites requests to `index.php` and preserves PHP's error responses instead of replacing them with IIS error pages. The API root still intentionally returns `404 Not found`.
+If the response is the IIS HTML page `405 - HTTP verb used to access this page is not allowed`, with `Allow: GET, HEAD, OPTIONS, TRACE`, check the server mapping before changing application code. That response indicates IIS handling, commonly the StaticFile handler. A service-worker label in Chrome does not mean the worker generated the error.
 
-A `500.19` error generally indicates an unavailable/locked configuration section or invalid IIS configuration: inspect its detailed error code, check URL Rewrite is installed, and ensure the listed sections are delegated. If PHP source is downloaded or displayed, the FastCGI handler is not configured correctly; correct the mapping before serving the API.
+In IIS Manager, select the **api application**, then verify:
 
-References: [Microsoft URL Rewrite configuration](https://learn.microsoft.com/en-us/iis/extensions/url-rewrite-module/url-rewrite-module-configuration-reference) and [PHP installation on IIS](https://www.php.net/manual/en/install.windows.iis.php).
+1. **Basic Settings:** alias `api`, physical path ending in `api\public`. It must be a child application beneath the frontend site, not an ordinary directory under `dist`.
+2. **URL Rewrite:** the `Wallet PHP front controller` rule from `api/public/web.config` must be present and rewrite the application-relative URL to `index.php`. No parent/global SPA fallback may intercept `/api` first.
+3. **Handler Mappings:** the effective `*.php` mapping must use `FastCgiModule` with the actual installed `php-cgi.exe`. Open **Edit → Request Restrictions → Verbs** and ensure `GET,HEAD,POST` are permitted. In **View Ordered List**, the PHP mapping must be able to handle `index.php` rather than falling through to StaticFile. Do not add POST to the StaticFile handler.
+4. **Request Filtering → HTTP Verbs:** verify POST is not denied by an inherited policy. Have the IIS administrator adjust the API application's policy if necessary; do not broadly enable all verbs.
+5. Verify the deployed PHP files include `src/ResponseEncryption.php` and the current `public/index.php` with POST contact routing.
+
+Diagnostic requests (replace TOKEN with an existing public token):
+
+```powershell
+curl.exe -i "https://uat-people.sbmgroup.mu/api/index.php"
+curl.exe -i -X POST "https://uat-people.sbmgroup.mu/api/v1/public/contact/TOKEN" -H "Content-Type: application/json" --data "{}"
+```
+
+The first should reach PHP and return plain `404 Not found`. With the encrypted profile store configured, the second should return plain `400 Invalid encryption request`, because the diagnostic body intentionally lacks a public key. An application-generated 500 instead requires checking PHP's log/store configuration. An IIS HTML 405 still means the handler/rewrite configuration is unresolved. If both mappings appear correct, inspect IIS Failed Request Tracing or the detailed error's **Module** and **Handler** fields to identify which module rejected POST.
+
+Reference: [Microsoft IIS 405 troubleshooting](https://learn.microsoft.com/en-us/troubleshoot/developer/webapps/iis/site-behavior-performance/http-error-405-website).
+
+
+## Undefined SODIUM_CRYPTO_SECRETBOX_KEYBYTES on IIS
+
+This means the PHP runtime handling the request has not loaded Sodium. In the PHP installation selected by the API's FastCGI handler, enable `extension=php_sodium.dll` in the active `php.ini`. Verify `extension_dir` points to that installation's `ext` directory and that `php_sodium.dll` is present from the matching PHP distribution. Check IIS FastCGI's `PHPRC` setting if CLI and web requests use different configuration files. Recycle the API application pool after the change and retry the contact request. If loading still fails, inspect PHP startup errors for DLL/dependency/version issues.
+
+Keep the existing encrypted store and key; enabling the extension does not require generating a new key. The application now logs an explicit Sodium configuration error instead of accessing an undefined constant. See [PHP's Windows Sodium installation instructions](https://www.php.net/manual/en/sodium.installation.php).
+
+
+## Could not generate response key on IIS
+
+This error comes from OpenSSL creating the ephemeral P-256 response key, after the profile store has been decrypted. A missing/unreadable `openssl.cnf` is one possible Windows cause; the updated PHP error log includes the underlying OpenSSL errors to distinguish configuration problems from unavailable EC/provider support.
+
+Locate the valid `openssl.cnf` supplied with your PHP/OpenSSL installation. Set its actual absolute path in `api/.env`, for example (only if that file exists):
+
+```ini
+OPENSSL_CONF=C:/PHP/extras/ssl/openssl.cnf
+```
+
+Deploy the updated `api/src/ResponseEncryption.php` and `api/public/index.php`. Give the API application-pool identity read access to the configuration file, recycle the pool and retry. The app passes this setting explicitly to PHP key generation; `.env` files do not automatically populate process environment variables. A process-level `OPENSSL_CONF`, if configured, overrides `.env` as with the other settings.
+
+Use your organization's existing OpenSSL/provider policy; do not replace it with an arbitrary configuration or enable legacy algorithms. If the error persists, collect the complete new `Contact lookup failed: Could not generate response key: ...` log line. Do not regenerate the profile-storage key: it is unrelated to this ephemeral response key.
+
+Reference: [PHP OpenSSL Windows configuration requirements](https://www.php.net/manual/en/openssl.installation.php).

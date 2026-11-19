@@ -113,7 +113,7 @@ function buildGooglePassObject(array $profile, array $config): array {
         'textModulesData' => $text,
         'linksModuleData' => ['uris' => $links],
     ];
-    $photoUrl = profilePhotoUrl($profile, $config['publicBaseUrl']);
+    $photoUrl = !empty($config['includeContactPhoto']) ? profilePhotoUrl($profile, $config['publicBaseUrl']) : null;
     if ($photoUrl) {
         $object['logo'] = [
             'sourceUri' => ['uri' => $photoUrl],
@@ -145,14 +145,6 @@ function createGoogleSaveUrl(array $profile, array $config): string {
         'origins' => [$origin], 'payload' => ['genericObjects' => [['id' => $objectId, 'classId' => $classId]]],
     ];
     return 'https://pay.google.com/gp/v/save/' . signJwt($claims, $config['privateKey']);
-}
-
-function runCommand(array $command, string $directory): void {
-    $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $directory);
-    if (!is_resource($process)) throw new RuntimeException('Could not start pass signing');
-    stream_get_contents($pipes[1]); fclose($pipes[1]);
-    $error = stream_get_contents($pipes[2]); fclose($pipes[2]);
-    if (proc_close($process) !== 0) throw new RuntimeException('Pass signing failed: ' . trim($error));
 }
 
 function loadProfilePhoto(array $profile): ?string {
@@ -204,6 +196,9 @@ function orientPhoto(\GdImage $image, int $orientation): \GdImage {
 }
 
 function createAppleContactImages(array $profile, string $directory): array {
+    if (!function_exists('imagecreatefromstring')) {
+        throw new RuntimeException('PHP GD is unavailable; enable extension=gd to include Apple Wallet contact photos');
+    }
     $bytes = loadProfilePhoto($profile);
     if ($bytes === null) return [];
     $image = @imagecreatefromstring($bytes);
@@ -269,10 +264,12 @@ function createApplePass(array $profile, array $config): string {
             $files[$name] = file_get_contents(__DIR__ . '/../assets/' . $name);
             if ($files[$name] === false) throw new RuntimeException('Pass asset missing: ' . $name);
         }
-        try {
-            $files = array_merge($files, createAppleContactImages($profile, $directory));
-        } catch (\Throwable $error) {
-            error_log('Unable to add Apple Wallet contact photo: ' . $error->getMessage());
+        if (!empty($config['includeContactPhoto'])) {
+            try {
+                $files = array_merge($files, createAppleContactImages($profile, $directory));
+            } catch (\Throwable $error) {
+                error_log('Unable to add Apple Wallet contact photo: ' . $error->getMessage());
+            }
         }
         $manifest = [];
         foreach ($files as $name => $bytes) {
@@ -281,15 +278,29 @@ function createApplePass(array $profile, array $config): string {
         }
         $manifestJson = json_encode($manifest, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
         file_put_contents($directory . '/manifest.json', $manifestJson);
-        $keyPath = $config['privateKeyPath'];
-        if (!empty($config['privateKeyPassword'])) {
-            $key = openssl_pkey_get_private(file_get_contents($keyPath), $config['privateKeyPassword']);
-            if (!$key || !openssl_pkey_export($key, $plainKey)) throw new RuntimeException('Could not decrypt Apple pass key');
-            $keyPath = $directory . '/signing-key.pem';
-            file_put_contents($keyPath, $plainKey);
-            chmod($keyPath, 0600);
+        $pem = @file_get_contents($config['privateKeyPath']);
+        if ($pem === false) {
+            throw new RuntimeException('Cannot read APPLE_PASS_KEY_PEM; check the configured path and IIS application pool permissions');
         }
-        runCommand(['openssl', 'cms', '-sign', '-binary', '-in', 'manifest.json', '-signer', $config['certificatePath'], '-inkey', $keyPath, '-certfile', $config['wwdrCertificatePath'], '-outform', 'DER', '-out', 'signature', '-nosmimecap'], $directory);
+        $key = openssl_pkey_get_private($pem, $config['privateKeyPassword'] ?? '');
+        if (!$key) {
+            throw new RuntimeException('Could not load Apple pass key; check the PEM file and APPLE_PASS_KEY_PASSWORD');
+        }
+        while (openssl_error_string() !== false) {}
+        if (!@openssl_cms_sign(
+            $directory . '/manifest.json',
+            $directory . '/signature',
+            'file://' . $config['certificatePath'],
+            $key,
+            null,
+            OPENSSL_CMS_BINARY | OPENSSL_CMS_DETACHED,
+            OPENSSL_ENCODING_DER,
+            $config['wwdrCertificatePath']
+        )) {
+            $errors = [];
+            while (($error = openssl_error_string()) !== false) $errors[] = $error;
+            throw new RuntimeException('Apple pass CMS signing failed: ' . ($errors ? implode('; ', $errors) : 'check certificate and WWDR paths'));
+        }
         $archive = new ZipArchive();
         $archivePath = $directory . '/contact.pkpass';
         if ($archive->open($archivePath, ZipArchive::CREATE) !== true) throw new RuntimeException('Could not create pass ZIP');

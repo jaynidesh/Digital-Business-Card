@@ -26,15 +26,17 @@ function loadEnvironment(string $file, array $overrides = []): array {
     return array_replace($values, $overrides);
 }
 
-function configFromEnvironment(array $env, string $root): array {
+function configFromEnvironment(array $env, string $root, ?string $provider = null): array {
     $path = static function (?string $value) use ($root): ?string {
         if (!$value) return null;
-        return str_starts_with($value, '/') ? $value : $root . '/' . $value;
+        return preg_match('~^(?:[A-Za-z]:[\\\\/]|/|\\\\\\\\)~', $value) ? $value : $root . '/' . $value;
     };
     $google = null;
-    if (!empty($env['GOOGLE_WALLET_ISSUER_ID']) && !empty($env['GOOGLE_WALLET_SERVICE_ACCOUNT_JSON'])) {
+    if ($provider !== 'apple' && !empty($env['GOOGLE_WALLET_ISSUER_ID']) && !empty($env['GOOGLE_WALLET_SERVICE_ACCOUNT_JSON'])) {
         $accountFile = $path($env['GOOGLE_WALLET_SERVICE_ACCOUNT_JSON']);
-        $account = json_decode(file_get_contents($accountFile), true, 512, JSON_THROW_ON_ERROR);
+        $json = @file_get_contents($accountFile);
+        if ($json === false) throw new RuntimeException('Cannot read GOOGLE_WALLET_SERVICE_ACCOUNT_JSON; check the configured path and IIS application pool permissions');
+        $account = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         if (empty($account['client_email']) || empty($account['private_key'])) throw new RuntimeException('Google service account is incomplete');
         $google = [
             'issuerId' => $env['GOOGLE_WALLET_ISSUER_ID'],
@@ -44,7 +46,7 @@ function configFromEnvironment(array $env, string $root): array {
     }
     $apple = null;
     $appleKeys = ['APPLE_PASS_TYPE_ID', 'APPLE_TEAM_ID', 'APPLE_PASS_CERT_PEM', 'APPLE_PASS_KEY_PEM', 'APPLE_WWDR_CERT_PEM'];
-    if (count(array_filter($appleKeys, static fn ($key) => !empty($env[$key]))) === count($appleKeys)) {
+    if ($provider !== 'google' && count(array_filter($appleKeys, static fn ($key) => !empty($env[$key]))) === count($appleKeys)) {
         $apple = [
             'passTypeId' => $env['APPLE_PASS_TYPE_ID'],
             'teamId' => $env['APPLE_TEAM_ID'],
@@ -54,5 +56,5 @@ function configFromEnvironment(array $env, string $root): array {
             'privateKeyPassword' => $env['APPLE_PASS_KEY_PASSWORD'] ?? null,
         ];
     }
-    return ['publicBaseUrl' => $env['PUBLIC_BASE_URL'] ?? null, 'google' => $google, 'apple' => $apple];
+    return ['includeContactPhoto' => filter_var($env['WALLET_INCLUDE_CONTACT_PHOTO'] ?? false, FILTER_VALIDATE_BOOLEAN), 'publicBaseUrl' => $env['PUBLIC_BASE_URL'] ?? null, 'google' => $google, 'apple' => $apple];
 }

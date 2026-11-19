@@ -1,7 +1,7 @@
 export interface SocialLink { label: string; url: string; icon: 'linkedin' | 'instagram' | 'facebook'; }
 
 export interface StaffProfile {
-  staffToken: string;
+  staffToken?: string;
   publicToken: string;
   displayName: string;
   initials: string;

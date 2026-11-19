@@ -11,7 +11,6 @@ import { visibleWallets, walletUrl } from './wallet-platform';
   selector: 'app-public-contact',
   standalone: true,
   templateUrl: './public-contact.component.html',
-  styleUrl: './public-contact.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule
@@ -88,8 +87,7 @@ export class PublicContactComponent {
     } else {
       const textarea = document.createElement('textarea');
       textarea.value = url;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
+      textarea.className = 'clipboard-fallback';
 
       document.body.appendChild(textarea);
       textarea.select();

@@ -28,3 +28,6 @@
 *.swo
 .DS_Store
 Thumbs.db
+
+# Encrypted profile store and its private key (deploy separately)
+/server-php/private/

@@ -1,8 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { PublicProfileService } from '../services/public-profile.service';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { AsyncPipe } from '@angular/common';
-
-@Component({ selector:'app-examples', standalone:true, imports:[RouterLink, AsyncPipe], templateUrl:'./examples.component.html', styleUrl:'./examples.component.scss', changeDetection:ChangeDetectionStrategy.OnPush })
-export class ExamplesComponent { readonly profiles = inject(PublicProfileService).getProfiles(); }
+@Component({ selector: 'app-examples', standalone: true, templateUrl: './examples.component.html', changeDetection: ChangeDetectionStrategy.OnPush })
+export class ExamplesComponent {}

@@ -1,6 +1,6 @@
 # Digital Staff Contact
 
-Angular digital business cards with interchangeable Node and PHP services for Apple Wallet and Google Wallet passes. Profile data is still a demo fixture; the planned backoffice API is not connected yet.
+Angular digital business cards backed by PHP for encrypted contact lookup, PWA manifests, and Apple/Google Wallet passes. The legacy Node wallet-only service remains available for development. Profile administration still uses a local source fixture; the planned backoffice is not connected yet.
 
 ## Run
 
@@ -9,16 +9,16 @@ npm install
 npm start
 ```
 
-Open `/` to see three demo profiles.
+The homepage does not list profiles. Open an issued `/contact/{publicToken}` or `/staff/{staffToken}` link. Generate the encrypted store and start the PHP backend as described in [the deployment guide](server-php/README.md).
 
 - Public customer view: `/contact/{public-token}` — no login.
 - Staff QR view: `/staff/{staff-token}` — no login.
 
-Each profile has two different opaque tokens. The demo directory at `/` and the profile data are bundled into the frontend, so these links are public identifiers, not access controls. In production, profile lookup and token management must be handled by the backend.
+Each profile has two different opaque bearer tokens. PHP returns only the requested contact and excludes its staff token. There is no public directory or bundled dataset. Possession of a link permits viewing that contact; staff authentication/SSO is not implemented. Rotate previously exposed tokens if link secrecy is required.
 
 ## Install as an app
 
-Each public contact page and staff QR page has its own web app manifest. Installing `/contact/{public-token}` or `/staff/{staff-token}` opens that same page from the home-screen icon; the two pages have different app IDs. The demo manifests are generated from `data/mock-profiles.json` before `npm start` and `npm run build`. Restart the dev server after editing the fixture. When contacts come from the backoffice, it must provide equivalent per-contact manifests or they must be generated during deployment.
+Each public contact page and staff QR page gets its install manifest from the PHP API. Manifests are not generated as publicly indexed files. The app shell is installable, but contact lookup requires a network connection; contact API responses are not cached.
 
 The app shows a small **Install Our App** popup only on a resolved staff page (`/staff/{staff-token}`). It does not appear on public contact pages or the dashboard. When Chrome or Edge reports that the staff page is installable, **Install App** opens the browser's native prompt; **Maybe Later** hides the popup for the rest of that browser tab's session. iPhone and iPad visitors see **Share → Add to Home Screen** steps; if their browser does not offer that action, they can open the page in Safari. Safari on macOS shows **File → Add to Dock** guidance. The popup stays hidden in standalone mode and while a staff card is loading or unavailable. Browsers that cannot offer a native prompt do not show a nonfunctional Install button. The existing service worker caches app assets only; it does not cache wallet API responses or private customer data.
 
@@ -34,7 +34,7 @@ The public and staff cards show **Add to Apple Wallet** on iPhone and iPad, **Ad
 
 The Google pass shows the company, name, role and QR code, with mobile, office, email, department, website, address and WhatsApp text when available. It includes up to four priority links: public card, mobile call, email and WhatsApp. A profile photo is used as its logo only when it resolves to a public HTTPS URL; local and private URLs are skipped. The Apple pass includes profile thumbnails when the image can be loaded, and still signs if the photo is unavailable. The detailed Google object is stored through the Google Wallet API before issuing a short ID-only save link, since embedding all details in the link would exceed Google's recommended JWT length. Open **Add to Google Wallet** again after restarting the Wallet service to update a previously saved pass with the new fields.
 
-The service that issues Wallet passes must hold the signing credentials. You can use the existing Node service or the parallel PHP service; the backoffice can take over this role later. To configure either service:
+The PHP service implements the secured frontend APIs and holds Wallet signing credentials. The legacy Node service supports wallet issuance only, not the new encrypted contact APIs. The backoffice can take over this role later. Wallet configuration:
 
 1. Run `cp .env.example .env` and create `server/credentials/`. Both `.env` and this credential directory are ignored by Git.
 2. Put the Apple pass-signing certificate and matching private key in PEM format in that directory, along with the matching Apple WWDR intermediate certificate. Pass Type ID certificates issued by WWDR G4 need the [G4 intermediate from Apple PKI](https://www.apple.com/certificateauthority/); a G3 intermediate will not validate them. If your signing identity is a `.p12`, export its certificate and key to PEM with OpenSSL. Set `APPLE_PASS_TYPE_ID`, `APPLE_TEAM_ID`, `APPLE_PASS_CERT_PEM`, `APPLE_PASS_KEY_PEM`, and `APPLE_WWDR_CERT_PEM` in `.env` to the corresponding identifiers and file paths. Set `APPLE_PASS_KEY_PASSWORD` if the PEM key is encrypted.
@@ -84,14 +84,14 @@ Run `php server-php/tests/run.php` to verify its pass generation. PHP 8.1+ with 
 
 Angular proxies `/api` to the local wallet service during development. If you deploy this Node service, deploy `server/`, `src/assets/images/`, and `data/mock-profiles.json` alongside the Angular build, and reverse-proxy `/api/v1/public/contact/{token}/wallet/{apple|google}` to it on the same origin. The Google service account must be authorized for the Wallet issuer and the service needs outbound HTTPS access to Google's OAuth and Wallet Objects APIs. Copy `.env.example` to `.env` before running the service; its start script uses Node's `--env-file=.env` option. Use Node 22.12+ for both Angular and the Wallet service; the Wallet service also runs on Node 20.18.2. OpenSSL and `zip` are required. Requests for unknown tokens return 404; unconfigured wallet providers return 503.
 
-Do not put certificate keys or service account JSON into `public/`, `src/`, or the Angular build. The wallet service resolves a token against `data/mock-profiles.json`; it never signs contact fields submitted by the browser. The demo profile JSON itself is also bundled in the frontend, so the tokens are public identifiers.
+Do not put certificate keys or service account JSON into `public/`, `src/`, or the Angular build. The PHP service resolves a token against its encrypted private profile store; it never signs contact fields submitted by the browser. The source JSON must not be deployed into the frontend. Previously exposed tokens should be rotated if their secrecy is required.
 
 The current actions are plain text buttons. Before public release, use the [Apple-provided Wallet badge](https://developer.apple.com/wallet/add-to-apple-wallet-guidelines/) and the [Google-provided Wallet button](https://developers.google.com/wallet/generic/resources/brand-guidelines) under their respective brand guidelines. For issuer setup and pass validation, see [Apple pass creation](https://developer.apple.com/documentation/walletpasses/building-a-pass) and [Google Wallet web issuance](https://developers.google.com/wallet/generic/web).
 
 ## Backoffice integration
 
-The frontend currently loads `/data/mock-profiles.json` at runtime; the build publishes this file from `data/`. For the UAT `dist/` + `api/` layout, follow [the PHP deployment guide](server-php/README.md#uat-deployment-uat-peoplesbmgroupmu).
+The frontend loads one contact through an encrypted PHP POST response and decrypts it in memory using an ephemeral browser key. No login is required. Profile data is encrypted at rest outside the web root; the build contains neither the dataset nor token-bearing manifests. For the UAT `dist/` + `api/` layout, follow [the PHP deployment guide](server-php/README.md#uat-deployment-uat-peoplesbmgroupmu).
 
 Replace the mock implementation in `PublicProfileService` with the backoffice's public contact endpoint, such as `GET /api/v1/public/contact/{token}`. The backoffice should resolve and manage both public and staff tokens. It can also provide a vCard endpoint in place of the browser-generated file.
 
-Wallet settings belong on whichever server signs the passes: the backoffice if it takes over issuance, or the Node or PHP wallet service if it remains deployed. Keep the Apple certificate and private key, Google issuer ID and service-account key, and public base URL on that server. The Angular frontend only selects the device-appropriate button and calls the same-origin `/api/v1/public/contact/{token}/wallet/{apple|google}` endpoint; it must never receive signing keys. If the backoffice implements these two routes, update the development proxy to point to it and retire the demo wallet services. Until then, both services read `data/mock-profiles.json` rather than the backoffice's authoritative profile store.
+Wallet settings belong on whichever server signs the passes: the backoffice if it takes over issuance, or the Node or PHP wallet service if it remains deployed. Keep the Apple certificate and private key, Google issuer ID and service-account key, and public base URL on that server. The Angular frontend only selects the device-appropriate button and calls the same-origin `/api/v1/public/contact/{token}/wallet/{apple|google}` endpoint; it must never receive signing keys. If the backoffice implements these two routes, update the development proxy to point to it and retire the demo wallet services. Until then, the PHP service reads its encrypted profile store; the legacy Node wallet service still uses the development JSON fixture.

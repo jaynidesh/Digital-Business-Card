@@ -17,7 +17,6 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               { "glob": "**/*", "input": "public" }, 
-              { "glob": "mock-profiles.json", "input": "data", "output": "data" },
               "src/assets/images",
               "src/favicon.ico"],
             
@@ -26,6 +25,11 @@
           },
           "configurations": {
             "production": {
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": { "inline": false }
+              },
               "budgets": [
                 { "type": "initial", "maximumWarning": "800kB", "maximumError": "1MB" }
               ],

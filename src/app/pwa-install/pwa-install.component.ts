@@ -9,7 +9,6 @@ import { PwaInstallService } from '../services/pwa-install.service';
   selector: 'app-pwa-install',
   standalone: true,
   templateUrl: './pwa-install.component.html',
-  styleUrl: './pwa-install.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PwaInstallComponent {

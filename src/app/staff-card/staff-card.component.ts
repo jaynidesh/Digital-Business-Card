@@ -7,7 +7,7 @@ import { visibleWallets, walletUrl } from '../public-contact/wallet-platform';
 import { PublicProfileService } from '../services/public-profile.service';
 import { PwaInstallService } from '../services/pwa-install.service';
 
-@Component({selector:'app-staff-card',standalone:true,imports:[RouterLink],templateUrl:'./staff-card.component.html',styleUrl:'./staff-card.component.scss',changeDetection:ChangeDetectionStrategy.OnPush})
+@Component({selector:'app-staff-card',standalone:true,imports:[RouterLink],templateUrl:'./staff-card.component.html',changeDetection:ChangeDetectionStrategy.OnPush})
 export class StaffCardComponent {
   private readonly route=inject(ActivatedRoute); private readonly service=inject(PublicProfileService); private readonly router=inject(Router); private readonly destroyRef=inject(DestroyRef); private readonly pwaInstall=inject(PwaInstallService);
   readonly profile=signal<StaffProfile|null>(null); readonly qrDataUrl=signal(''); readonly copied=signal(false);

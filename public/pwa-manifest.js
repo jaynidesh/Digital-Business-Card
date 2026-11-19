@@ -6,7 +6,7 @@
   window.updatePwaManifest = function () {
     const match = /^\/(contact|staff)\/([A-Za-z0-9_-]+)\/?$/.exec(window.location.pathname);
     link.href = match
-      ? `/pwa/${match[1]}/${match[2]}.webmanifest`
+      ? `/api/v1/${match[1] === 'staff' ? 'staff' : 'public'}/contact/${match[2]}/manifest`
       : '/manifest.webmanifest';
   };
 

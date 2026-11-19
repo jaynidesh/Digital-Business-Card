@@ -1,13 +1,14 @@
 {
   "$schema": "./node_modules/@angular/service-worker/config/schema.json",
   "index": "/index.html",
-  "navigationUrls": ["/**", "!/**/*.*", "!/**/*__*", "!/**/*__*/**", "!/api", "!/api/**", "!/data/**"],
-  "dataGroups": [
-    {
-      "name": "profiles",
-      "urls": ["/data/mock-profiles.json"],
-      "cacheConfig": { "strategy": "freshness", "maxSize": 1, "maxAge": "7d", "timeout": "5s" }
-    }
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**",
+    "!/api",
+    "!/api/**",
+    "!/data/**"
   ],
   "assetGroups": [
     {
@@ -19,7 +20,6 @@
           "/index.csr.html",
           "/index.html",
           "/manifest.webmanifest",
-          "/pwa/**/*.webmanifest",
           "/*.css",
           "/*.js"
         ]

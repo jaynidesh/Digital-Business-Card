@@ -45,7 +45,7 @@
         <!-- <p class="eyebrow">Digital business card</p> -->
         <h1>{{ person.displayName }}</h1>
         <p class="role">{{ person.jobTitle }}</p>
-        <p class="department">{{ person.department }}</p>
+        <p class="department">{{ person.company }}</p>
       </section>
 
       <button class="save-button" type="button" (click)="downloadVCard(person)">
@@ -87,12 +87,12 @@
         } -->
       </section>
       <section class="quick-actions" aria-label="Quick contact actions">
-        <a [href]="'tel:' + person.website"><span class="action-icon">
+        <a [href]="person.website" target="_blank" rel="noopener noreferrer"><span class="action-icon">
           <span class="icon-language"></span>
         </span><b>Website</b>
         <!-- <small>Mobile</small> -->
       </a>
-      <a [href]="'https://maps.google.com/?q=' + person.address"><span class="action-icon">
+      <a [href]="'https://maps.google.com/?q=' + person.address" target="_blank" rel="noopener noreferrer"><span class="action-icon">
           <span class="icon-pin_drop"></span>
         </span><b>Location</b>
         <!-- <small>Office</small> -->
@@ -133,7 +133,7 @@
         <span class="icon-share"></span>
         {{ copied() ? 'Link copied' : 'Share contact' }}
       </button> -->
-      <p class="privacy">Business contact information · Shared securely</p>
+      <!-- <p class="privacy">Business contact information · Shared securely</p> -->
     </article>
 
     @if (qrOpen()) {
@@ -141,9 +141,9 @@
         <section class="qr-modal" role="dialog" aria-modal="true" aria-label="Contact QR code" (click)="$event.stopPropagation()">
           <button class="modal-close" type="button" (click)="qrOpen.set(false)" aria-label="Close">×</button>
           <div class="mini-brand"><img class="sbm_logo" src="assets/images/logo_sbm.png" alt="Logo"></div>
-          <h2>Scan to connect</h2><p>Open {{ person.displayName }}’s digital business card.</p>
+          <h2>Scan to connect with</h2><p><strong>{{ person.displayName }}</strong><span class="qr-role">{{ person.jobTitle }}</span></p>
           @if (qrDataUrl()) { <img [src]="qrDataUrl()" alt="QR code for this contact profile"> }
-          <strong>{{ person.displayName }}</strong><span class="qr-role">{{ person.jobTitle }}</span>
+          
         </section>
       </div>
     }

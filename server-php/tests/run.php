@@ -18,6 +18,7 @@ $keys = openssl_pkey_new(['private_key_type' => OPENSSL_KEYTYPE_RSA, 'private_ke
 openssl_pkey_export($keys, $privateKey);
 $publicKey = openssl_pkey_get_details($keys)['key'];
 $config = [
+    'includeContactPhoto' => true,
     'issuerId' => '123456789',
     'clientEmail' => 'wallet@example.test',
     'privateKey' => $privateKey,
@@ -66,6 +67,8 @@ run('Google pass matches the Node profile fields and URI IDs', function () use (
 });
 
 run('Google photo is omitted for local, insecure, or inline sources', function () use ($profile, $config): void {
+    $disabled = buildGooglePassObject($profile, [...$config, 'includeContactPhoto' => false]);
+    check(!isset($disabled['logo']), 'disabled Google photo should be omitted');
     $local = buildGooglePassObject($profile, [...$config, 'publicBaseUrl' => 'http://127.0.0.1:4200']);
     check(!isset($local['logo']), 'private HTTP origin should not be a Google image');
     $inline = buildGooglePassObject([...$profile, 'photo' => 'data:image/png;base64,AAAA'], $config);
@@ -154,6 +157,7 @@ run('Apple pass is signed and contains the public QR URL', function () use ($pro
         $bytes = createApplePass($profile, [
             'passTypeId' => 'pass.mu.sbm.contact', 'teamId' => 'TEAM123456',
             'certificatePath' => $cert, 'privateKeyPath' => $key, 'wwdrCertificatePath' => $wwdr,
+            'includeContactPhoto' => true,
             'publicBaseUrl' => 'https://contacts.example.test',
         ]);
         check(str_starts_with($bytes, 'PK'), 'pass is not ZIP');
