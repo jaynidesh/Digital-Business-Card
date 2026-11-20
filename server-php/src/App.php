@@ -45,7 +45,7 @@ function profileResponse(string $method, string $path, array $profiles): array {
         $body = [
             'id' => $route, 'name' => $profile['displayName'] . ' — SBM Contact',
             'short_name' => $profile['displayName'], 'start_url' => $route, 'scope' => $route,
-            'display' => 'standalone', 'background_color' => '#e8f0ee', 'theme_color' => '#083f38',
+            'display' => 'standalone', 'background_color' => '#e8f0ee', 'theme_color' => '#e8f0ee',
             'icons' => [
                 ['src' => '/icons/icon-192x192.png', 'sizes' => '192x192', 'type' => 'image/png'],
                 ['src' => '/icons/icon-512x512.png', 'sizes' => '512x512', 'type' => 'image/png'],

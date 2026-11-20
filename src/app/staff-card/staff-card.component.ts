@@ -14,6 +14,6 @@ export class StaffCardComponent {
   readonly wallets=visibleWallets(navigator.userAgent,navigator.platform,navigator.maxTouchPoints);
   readonly walletUrl=walletUrl;
   constructor(){const token=this.route.snapshot.paramMap.get('token')??'';this.service.getByStaffToken(token).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({next:p=>{this.profile.set(p);this.pwaInstall.readyPath.set(location.pathname);void this.makeQr(p);},error:()=>void this.router.navigateByUrl('/')});}
-  private async makeQr(p:StaffProfile):Promise<void>{const url=`${location.origin}/contact/${p.publicToken}`;this.qrDataUrl.set(await QRCode.toDataURL(url,{width:760,margin:2,errorCorrectionLevel:'M',color:{dark:'#073f38',light:'#ffffff'}}));}
+  private async makeQr(p:StaffProfile):Promise<void>{const url=`${location.origin}/contact/${p.publicToken}`;this.qrDataUrl.set(await QRCode.toDataURL(url,{width:760,margin:2,errorCorrectionLevel:'M',color:{dark:'#000000',light:'#ffffff'}}));}
   async share(p:StaffProfile):Promise<void>{const url=`${location.origin}/contact/${p.publicToken}`;if(navigator.share){await navigator.share({title:`${p.displayName} — ${p.company}`,text:`Contact ${p.displayName}`,url});return;}await navigator.clipboard.writeText(url);this.copied.set(true);setTimeout(()=>this.copied.set(false),1800);}
 }

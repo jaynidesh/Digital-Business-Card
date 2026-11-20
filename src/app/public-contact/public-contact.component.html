@@ -63,8 +63,8 @@
       </div> -->
 
       <section class="quick-actions" aria-label="Quick contact actions">
-        <a [href]="'tel:' + person.mobile"><span class="action-icon">
-          <span class="icon-phone"></span>
+        <a [href]="'tel:' + person.mobile" *ngIf="person.mobile"><span class="action-icon">
+          <span class="icon-phone_iphone"></span>
         </span><b>Mobile</b>
         <!-- <small>Mobile</small> -->
       </a>

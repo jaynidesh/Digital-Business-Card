@@ -40,7 +40,7 @@ app-staff-card {
       border-radius: 10px 4px;
       background: #1E3868;
       color: white;
-      font: 800 1rem Georgia
+      font: 800 1rem Arial
   }
 
   // header button {
@@ -67,7 +67,7 @@ app-staff-card {
       border-radius: 50%;
       color: #fff;
       background: #1E3868;
-      font: 600 1.1rem Georgia
+      font: 600 1.1rem Arial
   }
 
   .avatar img {
@@ -80,31 +80,30 @@ app-staff-card {
   .identity p {
       margin: 0 0 3px;
       color: #6b817d;
-      text-transform: uppercase;
       font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .12em;
 
       &.department{
-          margin-top: 5px;
+            margin-top: 5px;
+            color: #000000;
+            font-size: 0.86rem;
       }
   }
 
   .identity h1 {
       margin: 0;
       color: #1E3868;
-      font: 600 1.5rem Georgia
+      font: 600 1.5rem Arial
   }
 
   .identity span {
-      color: #00B2E2;
+      color: #000000;
       font-size: 12px;
       font-weight: bold;
   }
 
   .qr-panel {
-      background: #f0f6f4;
-      border: 1px solid #dce9e6;
+    //   background: #f0f6f4;
+    //   border: 1px solid #dce9e6;
       border-radius: 22px;
       padding: 20px;
       text-align: center
@@ -145,8 +144,11 @@ app-staff-card {
   }
 
   .details-button {
-      background: #1E3868;
-      color: #fff
+        background: #FAFAF9;
+        color: #1E3868;
+        border: 1px solid #eeeeee;
+        width: min(100%, 285px);
+        margin: 0 auto;
   }
 
   .details-button span {
@@ -187,7 +189,9 @@ app-staff-card {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 13px
+      margin: 0 auto;
+      margin-top: 13px;
+        width: min(100%, 285px);
   }
 
   .wallet-button {
@@ -195,7 +199,7 @@ app-staff-card {
       min-height: 48px;
       padding: 10px 14px;
       border-radius: 14px;
-      background: #111;
+      background: #1E3868;
       color: #fff;
       text-decoration: none;
       font-weight: 700;
@@ -213,8 +217,8 @@ app-staff-card {
   .round-button {
       width: 42px;
       height: 42px;
-      border: 1px solid #dfeae7;
-      background: #f7fbfa;
+      border: none;
+      background: #fafafa;
       border-radius: 14px;
       display: grid;
       place-items: center;

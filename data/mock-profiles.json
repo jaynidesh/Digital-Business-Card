@@ -8,29 +8,101 @@
     "jobTitle": "Ag. Group Chief Executive Officer",
     "department": "Group Executive Office",
     "company": "SBM Holdings Ltd",
-    "mobile": "+23052523456",
-    "mobileDisplay": "+230 5252 3456",
+    "mobile": "+23055000322",
+    "mobileDisplay": "+230 5500 0322",
     "office": "+2302028130",
     "extension": "",
     "email": "vimal.naikeny@sbmgroup.mu",
     "website": "https://www.sbmgroup.mu/",
     "websiteDisplay": "https://www.sbmgroup.mu",
-    "address": "7 Exchange Square, Wall Street, Cybercity, Ebene, Republic of Mauritius",
-    "whatsapp": "+23052523456",
+    "address": "SBM Tower",
+    "whatsapp": "+23055000322",
     "socials": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com",
+        "url": "https://www.linkedin.com/company/98639921/",
         "icon": "linkedin"
       },
       {
         "label": "Facebook",
-        "url": "https://www.facebook.com",
+        "url": "https://www.facebook.com/sbmholdings",
         "icon": "facebook"
       },
       {
         "label": "Instagram",
-        "url": "https://www.instagram.com",
+        "url": "https://www.instagram.com/sbm_bank",
+        "icon": "instagram"
+      }
+    ]
+  },
+  {
+    "staffToken": "kR7pQx2mNv-8ZaT4yLcWbH9",
+    "publicToken": "mT5vJq8nKs-3XrP7dYfGaL2",
+    "displayName": "Ashwin Jhurry",
+    "initials": "AJ",
+    "photo": "assets/images/man.jpg",
+    "jobTitle": "Group Chief Information Security Officer",
+    "department": "SBM Holdings Ltd",
+    "company": "SBM Group Holdings Ltd",
+    "mobile": "+23058291720",
+    "mobileDisplay": "+230 5829 1720",
+    "office": "+2302023381",
+    "extension": "",
+    "email": "ashwin.jhurry@sbmgroup.mu",
+    "website": "https://www.sbmgroup.mu/",
+    "websiteDisplay": "https://www.sbmgroup.mu",
+    "address": "SBM Tower",
+    "whatsapp": "+23058291720",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/company/98639921/",
+        "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com/sbmholdings",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/sbm_bank",
+        "icon": "instagram"
+      }
+    ]
+  },
+  {
+    "staffToken": "bN9wFx4pQr-6HtK2sVmAZcJ7",
+    "publicToken": "xL3dWp7tYk-9QvM5nRaFAsB4",
+    "displayName": "Gulshan Rai Ramroop",
+    "initials": "GR",
+    "photo": "assets/images/man.jpg",
+    "jobTitle": "Strategy Lead - Management Office",
+    "department": "CE Office",
+    "company": "SBM Bank (Mauritius) Ltd",
+    "mobile": "",
+    "mobileDisplay": "",
+    "office": "+2302024892",
+    "extension": "",
+    "email": "gulshanrai.ramroop@sbmgroup.mu",
+    "website": "https://www.sbmgroup.mu/",
+    "websiteDisplay": "https://www.sbmgroup.mu",
+    "address": "SBM Tower",
+    "whatsapp": "",
+    "socials": [
+      {
+        "label": "LinkedIn",
+        "url": "https://www.linkedin.com/company/sbmbank/",
+        "icon": "linkedin"
+      },
+      {
+        "label": "Facebook",
+        "url": "https://www.facebook.com/sbmholdings",
+        "icon": "facebook"
+      },
+      {
+        "label": "Instagram",
+        "url": "https://www.instagram.com/sbm_bank",
         "icon": "instagram"
       }
     ]
@@ -148,7 +220,7 @@
     "publicToken": "hGr_tQ2piu2dfELkK94CIXg3",
     "displayName": "Lawkousse Dajee",
     "initials": "DL",
-    "photo": "https://media.licdn.com/dms/image/v2/C5603AQEtT6_kMC6lfQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1517511436485?e=2147483647&v=beta&t=9GIIWmu4r4SXU2Slj-wJy_M5y9QfHaYVPA1rsLMVN6M",
+    "photo": "assets/images/man.jpg",
     "jobTitle": "Senior Officer, IT",
     "department": "Channel Team, IT",
     "company": "SBM Bank (Mauritius) Ltd",
@@ -164,7 +236,7 @@
     "socials": [
       {
         "label": "LinkedIn",
-        "url": "https://www.linkedin.com",
+        "url": "https://www.linkedin.com/company/5149531/",
         "icon": "linkedin"
       },
       {

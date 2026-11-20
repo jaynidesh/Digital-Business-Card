@@ -57,7 +57,7 @@ export class PublicContactComponent {
   async openQr(): Promise<void> {
     this.qrOpen.set(true);
     if (!this.qrDataUrl()) {
-      this.qrDataUrl.set(await QRCode.toDataURL(location.href, { width: 520, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#073f38', light: '#ffffff' } }));
+      this.qrDataUrl.set(await QRCode.toDataURL(location.href, { width: 520, margin: 2, errorCorrectionLevel: 'M', color: { dark: '#000000', light: '#ffffff' } }));
     }
   }
 

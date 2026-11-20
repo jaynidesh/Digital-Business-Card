@@ -47,7 +47,7 @@ app-public-contact {
       border-radius: 10px 4px 10px 4px;
       background: #1E3868;
       color: #fff;
-      font: 800 1rem/1 Georgia, serif;
+      font: 800 1rem/1 Arial, serif;
       box-shadow: inset -6px -6px 0 rgba(210, 169, 88, .22);
   }
 
@@ -61,8 +61,8 @@ app-public-contact {
   .round-button {
       width: 42px;
       height: 42px;
-      border: 1px solid #dfeae7;
-      background: #f7fbfa;
+      border: none;
+      background: #fafafa;
       border-radius: 14px;
       display: grid;
       place-items: center;
@@ -113,7 +113,7 @@ app-public-contact {
       place-items: center;
       color: #fff;
       background: linear-gradient(145deg, #164f47, #062f2a);
-      font: 500 2rem/1 Georgia, serif;
+      font: 500 2rem/1 Arial, serif;
       border: 3px solid #fff;
   }
 
@@ -129,19 +129,19 @@ app-public-contact {
   h1 {
       margin: 0;
       color: #1E3868;
-      font: 600 2rem/1.12 Georgia, serif;
+      font: 600 2rem/1.12 Arial, serif;
       letter-spacing: -.035em;
   }
 
   .role {
       margin: 8px 0 3px;
-      color: #00B2E2;
+      color: #000000;
       font-weight: 700;
   }
 
   .department {
       margin: 0;
-      color: #7a918d;
+      color: #000000;
       font-size: .86rem;
   }
 
@@ -182,10 +182,10 @@ app-public-contact {
   }
 
   .wallet-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px; 
   }
 
   .wallet-button {
@@ -219,9 +219,9 @@ app-public-contact {
 
   .quick-actions a {
       min-width: 0;
-      color: #153e38;
-      background: #f5f9f8;
-      border: 1px solid #e4ecea;
+      color: #1E3868;
+      background: #fafafa;
+      border: 1px solid #efefef;
       border-radius: 15px;
       text-decoration: none;
       display: grid;
@@ -231,14 +231,14 @@ app-public-contact {
   }
 
   .action-icon {
-      width: 40px;
-      height: 40px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: #1E3868;
-      font-weight: 800;
-      font-size: 26px;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        color: #1E3868;
+        font-weight: 800;
+        font-size: 26px;
   }
 
   .quick-actions b {
@@ -385,7 +385,7 @@ app-public-contact {
   .qr-modal h2 {
       margin: 16px 0 4px;
       color: #1E3868;
-      font: 600 1.65rem Georgia, serif;
+      font: 600 1.65rem Arial, serif;
   }
 
   .qr-modal p {
@@ -438,7 +438,7 @@ app-public-contact {
       place-items: center;
       background: #eff4f3;
       color: #1E3868;
-      font: 600 2rem Georgia, serif;
+      font: 600 2rem Arial, serif;
       margin-bottom: 24px
   }
 

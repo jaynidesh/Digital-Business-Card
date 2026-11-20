@@ -16,6 +16,31 @@ The homepage does not list profiles. Open an issued `/contact/{publicToken}` or 
 
 Each profile has two different opaque bearer tokens. PHP returns only the requested contact and excludes its staff token. There is no public directory or bundled dataset. Possession of a link permits viewing that contact; staff authentication/SSO is not implemented. Rotate previously exposed tokens if link secrecy is required.
 
+## Updating mock profile data
+
+After editing `data/mock-profiles.json`, run the existing encryption script from the project root (PHP 8.1+ with Sodium is required):
+
+```bash
+php server-php/tools/encrypt-profiles.php data/mock-profiles.json
+```
+
+The script validates the records and replaces `server-php/private/profiles.enc.json`. It reuses `server-php/private/profiles.key` if present; otherwise it creates a new key. Keep the existing key when updating data for an already deployed server: the encrypted file must be generated with the same key that server uses.
+
+For the UAT layout (`C:\Sites\People\`), upload these files through the secure deployment channel:
+
+| Local file | Server destination | When to upload |
+| --- | --- | --- |
+| `server-php/private/profiles.enc.json` | `C:\Sites\People\api\private\profiles.enc.json` | Every profile-data update. |
+| `server-php/private/profiles.key` | `C:\Sites\People\api\private\profiles.key` | Initial setup only, or a deliberate key rotation together with its matching encrypted file. Keep the deployed key for routine updates. |
+
+If the server configures `PROFILES_FILE` or `PROFILES_KEY_FILE` in `.env`, use those configured destinations instead. Keep the key outside the web root and preserve its restricted permissions. Never upload the plaintext `data/mock-profiles.json` into `dist/` or another public directory.
+
+For profile-field changes only, no Angular build or frontend upload is required. Refresh the affected contact page while online after replacing the encrypted file and verify the updated details. For local development, run the same encryption command and refresh the page with the PHP backend running.
+
+If the update also adds or changes bundled photos or other frontend assets, run `npm run build` and deploy the updated `build/` contents to `C:\Sites\People\dist\` as well. If you change a public or staff token, distribute the corresponding new links and QR codes.
+
+See [the PHP deployment guide](server-php/README.md) for initial server setup. The legacy Node wallet-only service reads the JSON fixture directly and must be restarted after fixture changes; it does not serve the secured contact frontend.
+
 ## Install as an app
 
 Each public contact page and staff QR page gets its install manifest from the PHP API. Manifests are not generated as publicly indexed files. The app shell is installable, but contact lookup requires a network connection; contact API responses are not cached.
